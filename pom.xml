@@ -37,6 +37,15 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+
+      <dependency>
+        <groupId>io.zeebe</groupId>
+        <artifactId>zb-bom</artifactId>
+        <version>${zeebe.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
       <dependency>
         <groupId>io.zeebe.camel</groupId>
         <artifactId>camel-zeebe-core</artifactId>

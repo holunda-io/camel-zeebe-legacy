@@ -1,5 +1,11 @@
 package io.zeebe.camel;
 
+import java.util.Properties;
+import java.util.function.Supplier;
+
+import io.zeebe.client.ZeebeClient;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
@@ -9,70 +15,63 @@ import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  * Represents a Zeebe endpoint.
  */
-@UriEndpoint(
-    firstVersion = "0.0.1-SNAPSHOT",
-    scheme = "zeebe",
-    title = "Zeebe",
-    syntax="zeebe:name",
-    consumerClass = ZeebeConsumer.class,
-    label = "custom")
+@UriEndpoint(firstVersion = "0.0.1-SNAPSHOT", scheme = "zeebe", title = "Zeebe", syntax = "zeebe:name", consumerClass = ZeebeConsumer.class, label = "custom")
 @NoArgsConstructor
 @Data
-public class ZeebeEndpoint extends DefaultEndpoint {
-    @UriPath @Metadata(required = "true")
-    private String name;
+public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClient>
+{
+
+    private ZeebeClient zeebeClient;
+    private ZeebeComponent component;
 
     /**
-     * Some description of this option, and what it does
+     * The name.
      */
-    @UriParam(defaultValue = "10")
-    private int option = 10;
+    @UriPath @Metadata(required = "true")
+    private String topicName;
 
-    public ZeebeEndpoint(String uri, ZeebeComponent component) {
+    /**
+     * just to fill the space.
+     * TODO: remove
+     */
+    @UriPath
+    private String option;
+
+
+    public ZeebeEndpoint(String uri, ZeebeComponent component)
+    {
         super(uri, component);
-    }
+        this.component = component;
 
-    public ZeebeEndpoint(String endpointUri) {
-        super(endpointUri);
+
+
+        this.zeebeClient = ZeebeClient.create(new Properties());
     }
 
     @Override
-    public Producer createProducer() throws Exception {
+    public Producer createProducer() throws Exception
+    {
         return new ZeebeProducer(this);
     }
 
     @Override
-    public Consumer createConsumer(Processor processor) throws Exception {
+    public Consumer createConsumer(Processor processor) throws Exception
+    {
         return new ZeebeConsumer(this, processor);
     }
 
-    public boolean isSingleton() {
+    @Override
+    public boolean isSingleton()
+    {
         return true;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public void setOption(int option) {
-        this.option = option;
-    }
-
-    public int getOption() {
-        return option;
+    @Override
+    public ZeebeClient get()
+    {
+        return zeebeClient;
     }
 }

@@ -13,10 +13,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>io.zeebe</groupId>
+      <artifactId>zeebe-client-java</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
     </dependency>
-    
+
     <!-- support camel documentation -->
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -28,6 +32,8 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+
+
     <!-- logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -47,8 +53,8 @@
 
     <!-- testing -->
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-test</artifactId>
+      <groupId>io.zeebe.camel</groupId>
+      <artifactId>camel-zeebe-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
