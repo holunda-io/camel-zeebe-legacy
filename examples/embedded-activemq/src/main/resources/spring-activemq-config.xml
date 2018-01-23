@@ -10,7 +10,7 @@
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- applciation component scan -->
-    <context:component-scan base-package="com.memorynotfound" />
+    <context:component-scan base-package="io.zeebe.camel.example" />
 
     <!-- enable the configuration of jms on annotations -->
     <jms:annotation-driven />

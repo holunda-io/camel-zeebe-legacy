@@ -13,8 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import io.zeebe.camel.example.amqp.model.Order;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Sends an {@link Order} message to the embedded queue every 3 seconds.
+ */
 // Enable if you want to configure an embedded activeMQ server using Spring XML Configuration
-// @Configuration
 // @ImportResource(value = "classpath:spring-activemq-config.xml")
 @SpringBootApplication
 @Slf4j
