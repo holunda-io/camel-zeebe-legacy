@@ -3,8 +3,8 @@ package io.zeebe.camel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Zeebe producer.
@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 @Slf4j
 public class ZeebeProducer extends DefaultProducer {
 
-    public ZeebeProducer(ZeebeEndpoint endpoint) {
+    private final ZeebeEndpoint endpoint;
+
+    public ZeebeProducer(final ZeebeEndpoint endpoint) {
         super(endpoint);
+        this.endpoint = endpoint;
     }
 
     @Override

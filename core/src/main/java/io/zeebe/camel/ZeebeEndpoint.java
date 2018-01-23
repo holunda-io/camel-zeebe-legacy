@@ -3,17 +3,17 @@ package io.zeebe.camel;
 import java.util.Properties;
 import java.util.function.Supplier;
 
-import io.zeebe.client.ZeebeClient;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
-import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
+
+import io.zeebe.client.ZeebeClient;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents a Zeebe endpoint.
