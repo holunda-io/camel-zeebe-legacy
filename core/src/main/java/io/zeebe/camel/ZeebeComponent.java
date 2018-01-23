@@ -1,12 +1,8 @@
 package io.zeebe.camel;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.camel.Endpoint;
-import io.zeebe.client.ZeebeClient;
-
-
 import org.apache.camel.impl.DefaultComponent;
 
 /**

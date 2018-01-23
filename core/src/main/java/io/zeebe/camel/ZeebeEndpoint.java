@@ -49,6 +49,7 @@ public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClie
 
 
         this.zeebeClient = ZeebeClient.create(new Properties());
+
     }
 
     @Override

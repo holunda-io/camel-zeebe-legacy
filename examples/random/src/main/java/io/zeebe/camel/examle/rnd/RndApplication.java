@@ -18,7 +18,7 @@ public class RndApplication {
         main.addRouteBuilder(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                from("rnd:foo?generator=alphanumeric&initialDelay=0&delay=50&length=100")
+                from("rnd:foo?generator=alphanumeric&initialDelay=0&delay=50&length=10")
                     .setHeader("foo", constant("bar"))
                     .aggregate(header("foo"), new ListAggregationStrategy())
                     .completionSize(5)
