@@ -1,5 +1,6 @@
 package io.zeebe.camel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 
@@ -18,7 +19,8 @@ public class ZeebeProducer extends DefaultProducer {
         this.endpoint = endpoint;
     }
 
-    public void process(Exchange exchange) throws Exception {
+    @Override
+    public void process(final Exchange exchange) throws Exception {
         System.out.println(exchange.getIn().getBody());
     }
 

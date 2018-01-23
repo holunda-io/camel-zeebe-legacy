@@ -34,12 +34,6 @@ public class RndEndpoint extends ScheduledPollEndpoint {
     private String name;
 
     /**
-     * The options.
-     */
-    @UriParam(defaultValue = "10")
-    private int option = 10;
-
-    /**
      * The generator
      */
     @UriParam
@@ -80,11 +74,6 @@ public class RndEndpoint extends ScheduledPollEndpoint {
      */
     @UriParam
     private int end = 0;
-
-    @Deprecated
-    public RndEndpoint(String endpointUri) {
-        super(endpointUri);
-    }
 
     public RndEndpoint(String uri, RndComponent component) {
         super(uri, component);
