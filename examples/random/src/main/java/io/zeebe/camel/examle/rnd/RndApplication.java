@@ -14,6 +14,7 @@ public class RndApplication {
             @Override
             public void configure() throws Exception {
                 from("rnd:foo?generator=alphabetic&length=30")
+                    .log()
                     .to("stream:out");
             }
         });

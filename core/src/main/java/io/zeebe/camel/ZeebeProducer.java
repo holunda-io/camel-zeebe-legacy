@@ -2,23 +2,24 @@ package io.zeebe.camel;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Zeebe producer.
  */
+@Slf4j
 public class ZeebeProducer extends DefaultProducer {
-    private static final Logger LOG = LoggerFactory.getLogger(ZeebeProducer.class);
-    private ZeebeEndpoint endpoint;
 
-    public ZeebeProducer(ZeebeEndpoint endpoint) {
+    private final ZeebeEndpoint endpoint;
+
+    public ZeebeProducer(final ZeebeEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
     }
 
     public void process(Exchange exchange) throws Exception {
-        System.out.println(exchange.getIn().getBody());    
+        System.out.println(exchange.getIn().getBody());
     }
 
 }
