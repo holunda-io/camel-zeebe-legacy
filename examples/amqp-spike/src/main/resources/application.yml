@@ -1,5 +1,4 @@
 spring:
-
   # Embedded ActiveMQ Configuration Example
   activemq:
     broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
@@ -7,7 +6,7 @@ spring:
     non-blocking-redelivery: true
     packages:
       trust-all: false
-      trusted: com.memorynotfound
+      trusted: io.zeebe.camel
     pool:
       block-if-full: true
       block-if-full-timeout: -1
@@ -20,7 +19,6 @@ spring:
       reconnect-on-exception: true
       time-between-expiration-check: -1
       use-anonymous-producers: true
-
   # Spring JMS Settings
   jms:
     listener:
@@ -36,12 +34,11 @@ spring:
       qos-enabled: true
       receive-timeout: 1000
       time-to-live: 36000
-
 # Logging configuration print only messages for tutorial purposes
 logging:
   pattern:
     console: "%msg%n"
   level:
-      - ".=info"
-      - "com.memorynotfound=debug"
-      - "org.springframework=info"
+    - ".=info"
+    - "io.zeebe.camel=debug"
+    - "org.springframework=info"

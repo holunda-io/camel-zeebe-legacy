@@ -3,10 +3,14 @@ package io.zeebe.camel.example.amqp;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -37,6 +41,19 @@ public class Application implements SmartLifecycle {
         Order myMessage = new Order(count.getAndIncrement() + " - Sending JMS Message using Embedded activeMQ", new Date());
         orderSender.send(myMessage);
 
+    }
+
+    //@Bean
+    public RouteBuilder readfromQueue() {
+        return new RouteBuilder()
+        {
+
+            @Override
+            public void configure() throws Exception
+            {
+                from("activmq://vm:" + ActiveMQConfig.ORDER_QUEUE).to("stream:out");
+            }
+        };
     }
 
     public static void main(String[] args) throws Exception {

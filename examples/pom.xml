@@ -20,6 +20,7 @@
     <module>playground</module>
     <module>embedded-activemq</module>
     <module>random</module>
+    <module>amqp-spike</module>
   </modules>
 
 </project>
