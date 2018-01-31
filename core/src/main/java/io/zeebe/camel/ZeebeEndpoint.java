@@ -21,17 +21,16 @@ import lombok.NoArgsConstructor;
 @UriEndpoint(firstVersion = "0.0.1-SNAPSHOT", scheme = "zeebe", title = "Zeebe", syntax = "zeebe:name", consumerClass = ZeebeConsumer.class, label = "custom")
 @NoArgsConstructor
 @Data
-public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClient>
+public class ZeebeEndpoint extends DefaultEndpoint implements ClientSupplier
 {
 
-    private ZeebeClient zeebeClient;
-    private ZeebeComponent component;
+   private ZeebeComponent component;
 
     /**
      * The name.
      */
     @UriPath @Metadata(required = "true")
-    private String topicName;
+    private String name;
 
     /**
      * just to fill the space.
@@ -41,14 +40,10 @@ public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClie
     private String option;
 
 
-    public ZeebeEndpoint(String uri, ZeebeComponent component)
+    public ZeebeEndpoint(final String uri, final ZeebeComponent component)
     {
         super(uri, component);
         this.component = component;
-
-
-
-        this.zeebeClient = ZeebeClient.create(new Properties());
 
     }
 
@@ -59,7 +54,7 @@ public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClie
     }
 
     @Override
-    public Consumer createConsumer(Processor processor) throws Exception
+    public Consumer createConsumer(final Processor processor) throws Exception
     {
         return new ZeebeConsumer(this, processor);
     }
@@ -71,8 +66,8 @@ public class ZeebeEndpoint extends DefaultEndpoint implements Supplier<ZeebeClie
     }
 
     @Override
-    public ZeebeClient get()
+    public ZeebeClient getClient()
     {
-        return zeebeClient;
+        return component.getClient();
     }
 }

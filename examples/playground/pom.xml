@@ -20,6 +20,12 @@
             <groupId>io.zeebe.camel</groupId>
             <artifactId>camel-zeebe-test</artifactId>
         </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.25</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
 
 </project>
