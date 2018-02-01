@@ -16,7 +16,6 @@ import org.apache.camel.impl.DefaultConsumer;
  *
  * @param <ZE> type of zeebe endpoint
  * @param <EH> type of eventHandler
- *            @param <S> type of subscription
  */
 @Slf4j
 public abstract class AbstractZeebeConsumer<ZE extends AbstractZeebeEndpoint, EH> extends DefaultConsumer
@@ -50,6 +49,8 @@ public abstract class AbstractZeebeConsumer<ZE extends AbstractZeebeEndpoint, EH
     protected void doStop() throws Exception
     {
         log.info("stopping consumer ....");
-        Optional.ofNullable(subscriptionAdapter).filter(SubscriptionAdapter::isNotClosed).ifPresent(SubscriptionAdapter::close);
+        Optional.ofNullable(subscriptionAdapter)
+                .filter(SubscriptionAdapter::isNotClosed)
+                .ifPresent(SubscriptionAdapter::close);
     }
 }

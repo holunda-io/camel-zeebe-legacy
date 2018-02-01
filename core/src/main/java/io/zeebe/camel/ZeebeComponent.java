@@ -12,7 +12,8 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
 /**
- * The zeebe core component.
+ * The zeebe core component. It is identified by camel via the {@link ZeebeComponent#SCHEME} keyword.
+ * To get registered, this class is bound to the scheme in <code>/META-INF/services/org/apache/camel/component/zeebe</code>.
  */
 @Slf4j
 public class ZeebeComponent extends DefaultComponent implements ClientSupplier
@@ -21,11 +22,30 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
 
     private final ZeebeClient client;
 
+    /**
+     * A new zeebe camel component is created with an existing client. The configuration/creation of the client is not
+     * in the responsibility of this component.
+     *
+     * <pre>
+     *     ZeebeClient client = ....;
+     *     camelContext.addComponent(ZeebeComponent.SCHEME, new ZeebeComponent(client));
+     * </pre>
+     *
+     * @param client the zeebe client
+     */
     public ZeebeComponent(final ZeebeClient client)
     {
         this.client = Objects.requireNonNull(client, "client must not be null!");
     }
 
+    /**
+     *
+     * @param uri the complete uri as used in the routeBuilder
+     * @param remaining the part between <code>zeebe:</code> and the (optional) parameters. Used to identify the use case and what endpoint to create.
+     * @param parameters
+     * @return
+     * @throws Exception
+     */
     @Override
     protected Endpoint createEndpoint(final String uri, final String remaining, final Map<String, Object> parameters) throws Exception
     {
