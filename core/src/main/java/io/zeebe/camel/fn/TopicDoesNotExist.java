@@ -6,7 +6,11 @@ import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.clustering.impl.TopicLeader;
 import lombok.Value;
 
+/**
+ * @deprecated still needed here?
+ */
 @Value
+@Deprecated
 public class TopicDoesNotExist implements Predicate<String>
 {
 

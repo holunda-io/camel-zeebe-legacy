@@ -1,5 +1,6 @@
 package io.zeebe.camel.helper;
 
+import io.zeebe.camel.ZeebeComponent;
 import io.zeebe.client.event.WorkflowInstanceEvent;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.CamelContext;
@@ -12,10 +13,13 @@ public class Steps
 
     private final CamelContext context = new DefaultCamelContext();
 
-    public Steps(ZeebeTestRule zeebe)
+    public Steps(final ZeebeTestRule zeebe)
     {
+
         this.zeebe = zeebe;
+        this.context.addComponent(ZeebeComponent.SCHEME, new ZeebeComponent(zeebe.getClient()));
     }
+
 
     public void deploy() {
         zeebe.getClient().workflows().deploy(zeebe.getDefaultTopic())

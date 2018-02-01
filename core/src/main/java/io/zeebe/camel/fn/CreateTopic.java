@@ -6,9 +6,13 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @deprecated not needed here?
+ */
 @Value
 @Builder
 @Slf4j
+@Deprecated
 public class CreateTopic
 {
     private ZeebeClient client;

@@ -1,4 +1,4 @@
-package io.zeebe.camel;
+package io.zeebe.camel.fn;
 
 import io.zeebe.client.ZeebeClient;
 
