@@ -12,6 +12,7 @@
     <module>core</module>
     <module>test</module>
     <module>examples</module>
+    <module>camel-zeebe-spring</module>
   </modules>
 
   <properties>

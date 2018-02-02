@@ -14,7 +14,6 @@ public class SubscribeToGeneralEventsOnTopicTest
     @Rule
     public final ZeebeTestRule zeebe = new ZeebeTestRule();
 
-
     private Steps steps;
 
     @Before

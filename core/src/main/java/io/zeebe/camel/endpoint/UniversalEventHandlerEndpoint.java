@@ -16,9 +16,9 @@ import lombok.Data;
 /**
  * Represents a Zeebe endpoint.
  */
-@UriEndpoint(scheme = ZeebeComponent.SCHEME, title = "Zeebe UniversalEventHandler", syntax = "zeebe:universalEventHandler", consumerClass = UniversalEventHandlerConsumer.class, label = "custom")
 @Data
 @Slf4j
+@UriEndpoint(scheme = ZeebeComponent.SCHEME, title = "Zeebe UniversalEventHandler", syntax = "zeebe:universalEventHandler", consumerClass = UniversalEventHandlerConsumer.class, label = "custom")
 public class UniversalEventHandlerEndpoint extends AbstractZeebeEndpoint
 {
     /**
