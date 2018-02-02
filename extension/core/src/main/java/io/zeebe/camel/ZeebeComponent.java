@@ -57,12 +57,12 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
         log.info("creating endpoint configuration={}", configuration);
 
         Endpoint endpoint;
-        switch (remaining)
+        switch (configuration.getSubject())
         {
-        case UniversalEventEndpoint.OPERATION:
+        case UniversalEventEndpoint.SUBJECT:
             endpoint = new UniversalEventEndpoint(configuration);
             break;
-        case TaskEndpoint.OPERATION:
+        case TaskEndpoint.SUBJECT:
             endpoint = new TaskEndpoint(configuration);
             break;
         default:

@@ -10,6 +10,17 @@ import lombok.Value;
 @Builder
 public class TaskEvent
 {
+
+    /**
+     * @return the events metadata, such as its key or the topic and partition it belongs to
+     */
+    private final EventMetadata metadata;
+
+    /**
+     * @return the name of the state in the event's lifecycle. The lifecycle is different for each type
+     *   of event.
+     */
+    private final String state;
     /**
      * @return the task's type
      */
@@ -41,7 +52,7 @@ public class TaskEvent
      * @return the time until when the task is locked
      *   and can be exclusively processed by this client.
      */
-    private final Instant lockExpirationTime;
+    private final long lockTime;
 
     /**
      * @return JSON-formatted payload

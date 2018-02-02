@@ -8,9 +8,9 @@ import io.zeebe.camel.AbstractZeebeEndpoint;
 import io.zeebe.camel.EndpointConfiguration;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.Exchange;
+import org.apache.camel.Consumer;
+import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultProducer;
 import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriPath;
@@ -24,9 +24,11 @@ import org.apache.camel.spi.UriPath;
 public class TaskEndpoint extends AbstractZeebeEndpoint
 {
 
-    public static final String OPERATION = "taskHandler";
-    static final String SYNTAX = SCHEME + ":" + OPERATION;
-    static final String TITLE = "Zeebe TaskHandler";
+    public static final String SUBJECT = "task";
+    public static final String OPERATION_CREATE = "create";
+    public static final String OPERATION_COMPLETE = "complete";
+    public static final String SYNTAX = SCHEME + ":" + SUBJECT;
+    public static final String TITLE = "Zeebe TaskHandler";
 
     /**
      * The name.
@@ -53,19 +55,33 @@ public class TaskEndpoint extends AbstractZeebeEndpoint
     public TaskEndpoint(final EndpointConfiguration configuration)
     {
         super(configuration);
-        log.info("endpoint: {}", this.getClass().getSimpleName());
+        log.info("endpoint: {} {}", this.getClass().getSimpleName(), configuration);
+    }
+
+    @Override
+    public Consumer createConsumer(Processor processor) throws Exception
+    {
+        if (TaskEndpoint.OPERATION_CREATE.equals(configuration.getOperation()))
+        {
+            return new TaskCreateConsumer(this, processor);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     @Override
     public Producer createProducer() throws Exception
     {
-        return new DefaultProducer(this)
+        if (TaskEndpoint.OPERATION_COMPLETE.equals(configuration.getOperation()))
         {
-            @Override
-            public void process(final Exchange exchange) throws Exception
-            {
-                log.info("running ");
-            }
-        };
+
+            return new TaskProducer(this);
+        }
+        else
+        {
+            return null;
+        }
     }
 }

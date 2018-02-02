@@ -10,4 +10,8 @@ public class CompleteTaskCommand
     private TaskEvent task;
 
     private String payload;
+
+    public boolean hasPayload() {
+        return payload != null;
+    }
 }

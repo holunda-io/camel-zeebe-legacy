@@ -16,20 +16,20 @@ import lombok.Getter;
 @Getter
 public enum Handler
 {
-    TASK(TaskEndpoint.OPERATION, TaskHandler.class),
-    UNIVERSAL_EVENT(UniversalEventEndpoint.OPERATION, UniversalEventHandler.class),
+    TASK(TaskEndpoint.SUBJECT, TaskHandler.class),
+    UNIVERSAL_EVENT(UniversalEventEndpoint.SUBJECT, UniversalEventHandler.class),
     //
     ;
 
-    public static final Map<String, Handler> VALUES = Stream.of(Handler.values()).collect(Collectors.toMap(Handler::getOperation, e -> e));
+    public static final Map<String, Handler> VALUES = Stream.of(Handler.values()).collect(Collectors.toMap(Handler::getSubject, e -> e));
 
-    private final String operation;
+    private final String subject;
     private final Class<?> zeebeHandler;
 
-    Handler(String operation, Class<?> zeebeHandler)
+    Handler(String subject, Class<?> zeebeHandler)
     {
+        this.subject = subject;
 
-        this.operation = operation;
         this.zeebeHandler = zeebeHandler;
     }
 

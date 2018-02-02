@@ -28,8 +28,4 @@ public class EventMetadata
      */
     private final long key;
 
-    /**
-     * @return the type of the event
-     */
-    private final TopicEventType type;
 }

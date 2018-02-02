@@ -1,6 +1,7 @@
 package io.zeebe.camel.helper;
 
 import io.zeebe.camel.ZeebeComponent;
+import io.zeebe.camel.api.CompleteTaskCommand;
 import io.zeebe.client.event.WorkflowInstanceEvent;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.CamelContext;
@@ -45,4 +46,5 @@ public class Steps
     {
         return context;
     }
+
 }

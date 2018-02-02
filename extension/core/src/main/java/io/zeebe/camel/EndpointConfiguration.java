@@ -15,4 +15,14 @@ public class EndpointConfiguration
     private final String remaining;
     private final Map<String,Object> parameters;
     private final ZeebeComponent component;
+
+    public static final String REMAINING_SPLIT = ":";
+
+    public String getSubject() {
+        return remaining.split(REMAINING_SPLIT)[0];
+    }
+
+    public String getOperation() {
+        return remaining.split(REMAINING_SPLIT)[1];
+    }
 }

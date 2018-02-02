@@ -15,19 +15,19 @@ public class HandlerTest
     public void valueMap()
     {
         assertThat(Handler.VALUES).hasSize(2);
-        assertThat(Handler.VALUES.get(TaskEndpoint.OPERATION)).isEqualTo(TASK);
-        assertThat(Handler.VALUES.get(UniversalEventEndpoint.OPERATION)).isEqualTo(UNIVERSAL_EVENT);
+        assertThat(Handler.VALUES.get(TaskEndpoint.SUBJECT)).isEqualTo(TASK);
+        assertThat(Handler.VALUES.get(UniversalEventEndpoint.SUBJECT)).isEqualTo(UNIVERSAL_EVENT);
     }
 
     @Test
     public void taskHandler()
     {
-        assertThat(TASK.getOperation()).isEqualTo(TaskEndpoint.OPERATION);
+        assertThat(TASK.getSubject()).isEqualTo(TaskEndpoint.SUBJECT);
     }
 
     @Test
     public void universalEventHandler()
     {
-        assertThat(UNIVERSAL_EVENT.getOperation()).isEqualTo(UniversalEventEndpoint.OPERATION);
+        assertThat(UNIVERSAL_EVENT.getSubject()).isEqualTo(UniversalEventEndpoint.SUBJECT);
     }
 }

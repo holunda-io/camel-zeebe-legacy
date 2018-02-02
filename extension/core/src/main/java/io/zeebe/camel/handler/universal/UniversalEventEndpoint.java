@@ -24,9 +24,10 @@ import org.apache.camel.spi.UriPath;
 public class UniversalEventEndpoint extends AbstractZeebeEndpoint
 {
 
-    public static final String OPERATION = "universalEventHandler";
-    static final String SYNTAX = SCHEME + ":" + OPERATION;
-    static final String TITLE = "Zeebe UniversalEventHandler";
+    public static final String SUBJECT = "universal-event";
+    public static final String OPERATION_SUBSCRIBE = "subscribe";
+    public static final String SYNTAX = SCHEME + ":" + SUBJECT;
+    public static final String TITLE = "Zeebe UniversalEventHandler";
 
     /**
      * The name.
