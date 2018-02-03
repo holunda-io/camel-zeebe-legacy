@@ -4,10 +4,11 @@ import static io.zeebe.camel.ZeebeComponent.SCHEME;
 import static io.zeebe.camel.handler.universal.UniversalEventEndpoint.SYNTAX;
 import static io.zeebe.camel.handler.universal.UniversalEventEndpoint.TITLE;
 
-import io.zeebe.camel.AbstractZeebeEndpoint;
+import io.zeebe.camel.ZeebeEndpoint;
 import io.zeebe.camel.EndpointConfiguration;
 import io.zeebe.camel.ZeebeComponent;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -19,9 +20,10 @@ import org.apache.camel.spi.UriPath;
  * Represents a Zeebe endpoint.
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Slf4j
 @UriEndpoint(scheme = ZeebeComponent.SCHEME, title = TITLE, syntax = SYNTAX, consumerClass = UniversalEventConsumer.class, consumerOnly = true)
-public class UniversalEventEndpoint extends AbstractZeebeEndpoint
+public class UniversalEventEndpoint extends ZeebeEndpoint
 {
 
     public static final String SUBJECT = "universal-event";

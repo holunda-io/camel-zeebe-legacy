@@ -2,28 +2,33 @@ package io.zeebe.camel.handler.task;
 
 import java.time.Duration;
 
-import io.zeebe.camel.AbstractZeebeConsumer;
-import io.zeebe.camel.fn.SubscriptionAdapter;
+import io.zeebe.camel.ZeebeConsumer;
+import io.zeebe.client.TasksClient;
 import io.zeebe.client.task.TaskHandler;
+import io.zeebe.client.task.TaskSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Processor;
 
 @Slf4j
-public class TaskCreateConsumer extends AbstractZeebeConsumer<TaskEndpoint, TaskHandler>
+public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler, TaskSubscription>
 {
+
+    private final TasksClient client;
+
     public TaskCreateConsumer(final TaskEndpoint endpoint, Processor processor)
     {
         super(endpoint, processor);
-        log.error("____________ HERE!!!!!");
+
+        client = endpoint.getClient().tasks();
     }
 
     @Override
-    protected TaskHandler createHandler(final Processor processor)
+    protected TaskHandler createHandler()
     {
         return (client, task) -> {
             try
             {
-                processor.process(createExchangeForEvent.apply(task));
+                getProcessor().process(createExchangeForEvent.apply(task));
             }
             catch (Exception e)
             {
@@ -34,15 +39,13 @@ public class TaskCreateConsumer extends AbstractZeebeConsumer<TaskEndpoint, Task
     }
 
     @Override
-    protected SubscriptionAdapter createSubscription(TaskHandler handler)
+    protected TaskSubscription createSubscription(TaskHandler handler)
     {
-        return SubscriptionAdapter.of(endpoint.getClient()
-                                              .tasks()
-                                              .newTaskSubscription("default-topic")
-                                              .lockOwner("foo")
-                                              .lockTime(Duration.ofSeconds(10))
-                                              .taskType("doSomething")
-                                              .handler(createHandler(getProcessor()))
-                                              .open());
+        return client.newTaskSubscription("default-topic")
+                     .lockOwner("foo")
+                     .lockTime(Duration.ofSeconds(10))
+                     .taskType("doSomething")
+                     .handler(createHandler())
+                     .open();
     }
 }

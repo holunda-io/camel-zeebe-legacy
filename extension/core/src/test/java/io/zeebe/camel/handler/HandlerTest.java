@@ -14,9 +14,9 @@ public class HandlerTest
     @Test
     public void valueMap()
     {
-        assertThat(Handler.VALUES).hasSize(2);
-        assertThat(Handler.VALUES.get(TaskEndpoint.SUBJECT)).isEqualTo(TASK);
-        assertThat(Handler.VALUES.get(UniversalEventEndpoint.SUBJECT)).isEqualTo(UNIVERSAL_EVENT);
+        assertThat(Handler.BY_SUBJECT).hasSize(2);
+        assertThat(Handler.BY_SUBJECT.get(TaskEndpoint.SUBJECT)).isEqualTo(TASK);
+        assertThat(Handler.BY_SUBJECT.get(UniversalEventEndpoint.SUBJECT)).isEqualTo(UNIVERSAL_EVENT);
     }
 
     @Test

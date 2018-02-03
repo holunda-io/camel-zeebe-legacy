@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.zeebe.camel.ZeebeEndpoint;
+import io.zeebe.camel.EndpointConfiguration;
 import io.zeebe.camel.handler.task.TaskEndpoint;
 import io.zeebe.camel.handler.universal.UniversalEventEndpoint;
 import io.zeebe.client.event.UniversalEventHandler;
@@ -16,12 +18,26 @@ import lombok.Getter;
 @Getter
 public enum Handler
 {
-    TASK(TaskEndpoint.SUBJECT, TaskHandler.class),
-    UNIVERSAL_EVENT(UniversalEventEndpoint.SUBJECT, UniversalEventHandler.class),
+    TASK(TaskEndpoint.SUBJECT, TaskHandler.class)
+        {
+            @Override
+            public TaskEndpoint createEndpoint(final EndpointConfiguration configuration)
+            {
+                return new TaskEndpoint(configuration);
+            }
+        },
+    UNIVERSAL_EVENT(UniversalEventEndpoint.SUBJECT, UniversalEventHandler.class)
+        {
+            @Override
+            public UniversalEventEndpoint createEndpoint(final EndpointConfiguration configuration)
+            {
+                return new UniversalEventEndpoint(configuration);
+            }
+        },
     //
     ;
 
-    public static final Map<String, Handler> VALUES = Stream.of(Handler.values()).collect(Collectors.toMap(Handler::getSubject, e -> e));
+    public static final Map<String, Handler> BY_SUBJECT = Stream.of(Handler.values()).collect(Collectors.toMap(Handler::getSubject, e -> e));
 
     private final String subject;
     private final Class<?> zeebeHandler;
@@ -33,4 +49,5 @@ public enum Handler
         this.zeebeHandler = zeebeHandler;
     }
 
+    public abstract ZeebeEndpoint createEndpoint(final EndpointConfiguration configuration);
 }

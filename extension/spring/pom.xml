@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.zeebe.camel</groupId>
-    <artifactId>camel-zeebe-root</artifactId>
+    <artifactId>camel-zeebe-extension-root</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 

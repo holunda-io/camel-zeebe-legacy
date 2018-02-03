@@ -9,17 +9,18 @@ import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
 @Slf4j
-public abstract class AbstractZeebeEndpoint extends DefaultEndpoint implements ClientSupplier
+public abstract class ZeebeEndpoint extends DefaultEndpoint implements ClientSupplier
 {
     protected final EndpointConfiguration configuration;
 
     // TODO: set in constructor?
     protected final boolean isSingleton = true;
 
-    public AbstractZeebeEndpoint(final EndpointConfiguration configuration)
+    public ZeebeEndpoint(final EndpointConfiguration configuration)
     {
         super(configuration.getUri(), configuration.getComponent());
         this.configuration = configuration;
+
     }
 
     @Override

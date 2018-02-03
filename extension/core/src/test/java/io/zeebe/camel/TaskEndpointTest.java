@@ -1,13 +1,14 @@
 package io.zeebe.camel;
 
 import io.zeebe.camel.api.CompleteTaskCommand;
-import io.zeebe.camel.handler.task.TaskTypeConverter;
+import io.zeebe.camel.handler.task.TaskConverter;
 import io.zeebe.camel.helper.Steps;
 import io.zeebe.client.event.TaskEvent;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,6 +47,8 @@ public class TaskEndpointTest
         @Test
         public void start_and_complete_task() throws Exception
         {
+            MockEndpoint mock = new MockEndpoint();
+
             steps.getContext().addRoutes(new RouteBuilder()
             {
                 @Override
@@ -54,15 +57,17 @@ public class TaskEndpointTest
 
                     // subscribes to tasks on zeebeClient and forwards to jms
                     from("zeebe:task:create?option=foo")
-                        // TODO: here (or in consumer directly) we must convert from zeebe-TaskEvent to Camel-TaskEvent
+                        .convertBodyTo(io.zeebe.camel.api.TaskEvent.class)
                         .to("direct:someMessageSystemCreate");
 
-                    from("direct:someMessageSystemCreate").process(new Processor()
+                    from("direct:someMessageSystemCreate")
+
+                        .process(new Processor()
                     {
                         @Override
                         public void process(Exchange exchange) throws Exception
                         {
-                            io.zeebe.camel.api.TaskEvent taskEvent = TaskTypeConverter.convert(exchange.getIn().getBody(TaskEvent.class));
+                            io.zeebe.camel.api.TaskEvent taskEvent = exchange.getIn().getBody(io.zeebe.camel.api.TaskEvent.class);
                             final CompleteTaskCommand completeTaskCommand = CompleteTaskCommand.builder()
                                                                                                .task(taskEvent)
                                                                                                .payload("{\"bar\":\"hello\"}")

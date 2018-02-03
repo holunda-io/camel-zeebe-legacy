@@ -1,10 +1,5 @@
 package io.zeebe.camel.handler.task;
 
-import static io.zeebe.client.event.TopicEventType.TASK;
-
-import java.time.Instant;
-import java.util.Map;
-
 import io.zeebe.camel.api.EventMetadata;
 import io.zeebe.camel.api.TaskEvent;
 import io.zeebe.client.event.impl.TaskEventImpl;
@@ -12,21 +7,21 @@ import io.zeebe.client.impl.data.MsgPackConverter;
 import org.apache.camel.Converter;
 
 @Converter
-public class TaskTypeConverter
+public class TaskConverter
 {
 
     @Converter
     public static TaskEvent convert(io.zeebe.client.event.TaskEvent taskEvent)
     {
 
-        EventMetadata metadata = EventMetadata.builder()
-                                              .key(taskEvent.getMetadata().getKey())
-                                              .partitionId(taskEvent.getMetadata().getPartitionId())
-                                              .position(taskEvent.getMetadata().getPosition())
-                                              .topicName(taskEvent.getMetadata().getTopicName())
-                                              .build();
+        final EventMetadata metadata = EventMetadata.builder()
+                                                    .key(taskEvent.getMetadata().getKey())
+                                                    .partitionId(taskEvent.getMetadata().getPartitionId())
+                                                    .position(taskEvent.getMetadata().getPosition())
+                                                    .topicName(taskEvent.getMetadata().getTopicName())
+                                                    .build();
 
-        final TaskEvent task = TaskEvent.builder()
+        return TaskEvent.builder()
                                         .metadata(metadata)
                                         .state(taskEvent.getState())
                                         .customHeaders(taskEvent.getCustomHeaders())
@@ -38,11 +33,10 @@ public class TaskTypeConverter
                                         .type(taskEvent.getType())
 
                                         .build();
-        return task;
     }
 
     @Converter
-    public static io.zeebe.client.event.impl.TaskEventImpl convert(final TaskEvent taskEvent)
+    public static TaskEventImpl convert(final TaskEvent taskEvent)
     {
         TaskEventImpl zeebeTask = new TaskEventImpl(taskEvent.getState(), new MsgPackConverter());
 
@@ -53,6 +47,7 @@ public class TaskTypeConverter
         zeebeTask.setPayload(taskEvent.getGetPayload());
         zeebeTask.setRetries(taskEvent.getRetries());
         zeebeTask.setType(taskEvent.getType());
+
         // metadata
         zeebeTask.setEventPosition(taskEvent.getMetadata().getPosition());
         zeebeTask.setKey(taskEvent.getMetadata().getKey());

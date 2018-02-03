@@ -3,10 +3,27 @@ package io.zeebe.camel.fn;
 import io.zeebe.client.event.TopicSubscription;
 import io.zeebe.client.task.TaskSubscription;
 
-
 public interface SubscriptionAdapter
 {
-    static SubscriptionAdapter of(final TopicSubscription subscription) {
+    static SubscriptionAdapter of(Object subscription)
+    {
+        if (subscription instanceof TopicSubscription)
+        {
+            return of((TopicSubscription) subscription);
+        }
+        else if (subscription instanceof TaskSubscription)
+        {
+            return of((TaskSubscription) subscription);
+
+        }
+        else
+        {
+            throw new IllegalStateException("no subscriptionAdapter available for type " + subscription.getClass());
+        }
+    }
+
+    static SubscriptionAdapter of(final TopicSubscription subscription)
+    {
         return new SubscriptionAdapter()
         {
             @Override
@@ -23,7 +40,8 @@ public interface SubscriptionAdapter
         };
     }
 
-    static SubscriptionAdapter of(final TaskSubscription subscription) {
+    static SubscriptionAdapter of(final TaskSubscription subscription)
+    {
         return new SubscriptionAdapter()
         {
             @Override
@@ -50,8 +68,8 @@ public interface SubscriptionAdapter
      */
     void close();
 
-
-    default boolean isNotClosed() {
+    default boolean isNotClosed()
+    {
         return !isClosed();
     }
 }

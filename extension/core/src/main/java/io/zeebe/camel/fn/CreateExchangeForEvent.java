@@ -11,7 +11,6 @@ import org.apache.camel.Exchange;
 
 public class CreateExchangeForEvent implements Function<Event, Exchange>
 {
-
     public static final Function<EventMetadata, Map<String, Object>> createHeader = meta -> {
         final Map<String, Object> header = new HashMap<>();
 

@@ -35,7 +35,7 @@ public class SubscribeToGeneralEventsOnTopicTest
             @Override
             public void configure() throws Exception
             {
-                from("zeebe:universalEventHandler?option=hello").to("direct:foo");
+                from("zeebe:universal-event:subscribe?option=hello").to("direct:foo");
 
                 from("direct:foo").to("log:message");
             }

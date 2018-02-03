@@ -56,19 +56,8 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
                                                                          .build();
         log.info("creating endpoint configuration={}", configuration);
 
-        Endpoint endpoint;
-        switch (configuration.getSubject())
-        {
-        case UniversalEventEndpoint.SUBJECT:
-            endpoint = new UniversalEventEndpoint(configuration);
-            break;
-        case TaskEndpoint.SUBJECT:
-            endpoint = new TaskEndpoint(configuration);
-            break;
-        default:
-            throw new IllegalStateException(String.format("unsupported syntax: '%s'", remaining));
-        }
-        setProperties(endpoint, parameters);
+        final ZeebeEndpoint endpoint = configuration.createEndpoint();
+        setProperties(endpoint, configuration.getParameters());
         return endpoint;
     }
 

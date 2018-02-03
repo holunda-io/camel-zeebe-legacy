@@ -1,1 +1,1 @@
-io.zeebe.camel.handler.task.TaskTypeConverter
+io.zeebe.camel.handler.task.TaskConverter

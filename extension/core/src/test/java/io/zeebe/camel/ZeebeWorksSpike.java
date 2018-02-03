@@ -75,7 +75,7 @@ public class ZeebeWorksSpike
             @Override
             public void configure() throws Exception
             {
-                from("direct:foo").to("stream:out");
+                from("direct:foo").to("log:message");
 
                 from("timer:simple").transform()
                                     .exchange(e -> e.getProperty(Exchange.TIMER_FIRED_TIME, Date.class).getTime())

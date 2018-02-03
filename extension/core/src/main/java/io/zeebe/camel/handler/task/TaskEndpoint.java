@@ -4,9 +4,10 @@ import static io.zeebe.camel.ZeebeComponent.SCHEME;
 import static io.zeebe.camel.handler.task.TaskEndpoint.SYNTAX;
 import static io.zeebe.camel.handler.task.TaskEndpoint.TITLE;
 
-import io.zeebe.camel.AbstractZeebeEndpoint;
+import io.zeebe.camel.ZeebeEndpoint;
 import io.zeebe.camel.EndpointConfiguration;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -19,9 +20,10 @@ import org.apache.camel.spi.UriPath;
  * Represents a Zeebe endpoint.
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Slf4j
 @UriEndpoint(scheme = SCHEME, title = TITLE, syntax = SYNTAX)
-public class TaskEndpoint extends AbstractZeebeEndpoint
+public class TaskEndpoint extends ZeebeEndpoint
 {
 
     public static final String SUBJECT = "task";
@@ -76,7 +78,6 @@ public class TaskEndpoint extends AbstractZeebeEndpoint
     {
         if (TaskEndpoint.OPERATION_COMPLETE.equals(configuration.getOperation()))
         {
-
             return new TaskProducer(this);
         }
         else

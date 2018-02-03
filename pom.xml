@@ -13,7 +13,6 @@
     <!-- common test stuff -->
     <module>test</module>
 
-
     <!-- Examples: show how the extension can be used -->
     <module>examples</module>
   </modules>
