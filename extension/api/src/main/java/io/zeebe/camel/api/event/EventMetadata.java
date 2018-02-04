@@ -1,4 +1,4 @@
-package io.zeebe.camel.api;
+package io.zeebe.camel.api.event;
 
 import lombok.Builder;
 import lombok.Value;

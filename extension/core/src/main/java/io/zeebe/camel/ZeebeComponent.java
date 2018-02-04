@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import io.zeebe.camel.fn.ClientSupplier;
-import io.zeebe.camel.handler.task.TaskEndpoint;
-import io.zeebe.camel.handler.universal.UniversalEventEndpoint;
 import io.zeebe.client.ZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Endpoint;
@@ -19,6 +17,8 @@ import org.apache.camel.impl.DefaultComponent;
 public class ZeebeComponent extends DefaultComponent implements ClientSupplier
 {
     public static final String SCHEME = "zeebe";
+
+    public static final String DEFAULT_TOPIC = "default-topic";
 
     private final ZeebeClient client;
 
@@ -48,12 +48,11 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
     @Override
     protected Endpoint createEndpoint(final String uri, final String remaining, final Map<String, Object> parameters) throws Exception
     {
-        final EndpointConfiguration configuration = EndpointConfiguration.builder()
-                                                                         .uri(uri)
-                                                                         .remaining(remaining)
-                                                                         .parameters(parameters)
-                                                                         .component(this)
-                                                                         .build();
+        return createEndpoint(new EndpointConfiguration(uri,remaining,parameters, this));
+    }
+
+    protected ZeebeEndpoint createEndpoint(final EndpointConfiguration configuration) throws Exception
+    {
         log.info("creating endpoint configuration={}", configuration);
 
         final ZeebeEndpoint endpoint = configuration.createEndpoint();

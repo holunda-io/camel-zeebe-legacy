@@ -14,6 +14,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
+import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
 
 /**
@@ -35,24 +36,20 @@ public class TaskEndpoint extends ZeebeEndpoint
     /**
      * The name.
      */
-    @UriPath
+    @UriPath(name = "subject", description="type of events")
     @Metadata(required = "true")
-    private String name;
+    private String subject;
 
     /**
      * just to fill the space.
-     * TODO: remove
      */
     @UriPath
     @Metadata(required = "true")
-    private String option;
+    private String type;
 
-    /**
-     * The topic to subscribe to.
-     */
-    @UriPath
+    @UriParam(name = "owner", label = "owner")
     @Metadata(required = "true")
-    private String topic;
+    private String owner;
 
     public TaskEndpoint(final EndpointConfiguration configuration)
     {
@@ -63,26 +60,12 @@ public class TaskEndpoint extends ZeebeEndpoint
     @Override
     public Consumer createConsumer(Processor processor) throws Exception
     {
-        if (TaskEndpoint.OPERATION_CREATE.equals(configuration.getOperation()))
-        {
-            return new TaskCreateConsumer(this, processor);
-        }
-        else
-        {
-            return null;
-        }
+        return new TaskCreateConsumer(this, processor);
     }
 
     @Override
     public Producer createProducer() throws Exception
     {
-        if (TaskEndpoint.OPERATION_COMPLETE.equals(configuration.getOperation()))
-        {
-            return new TaskProducer(this);
-        }
-        else
-        {
-            return null;
-        }
+        return new TaskProducer(this);
     }
 }

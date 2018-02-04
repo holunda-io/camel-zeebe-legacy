@@ -43,7 +43,6 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends De
         EH handler = createHandler();
 
         subscriptionAdapter = SubscriptionAdapter.of(createSubscription(handler));
-
     }
 
     @Override

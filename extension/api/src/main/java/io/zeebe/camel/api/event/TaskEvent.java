@@ -1,6 +1,5 @@
-package io.zeebe.camel.api;
+package io.zeebe.camel.api.event;
 
-import java.time.Instant;
 import java.util.Map;
 
 import lombok.Builder;
@@ -8,7 +7,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class TaskEvent
+public class TaskEvent implements ZeebeEvent
 {
 
     /**
@@ -21,6 +20,7 @@ public class TaskEvent
      *   of event.
      */
     private final String state;
+
     /**
      * @return the task's type
      */

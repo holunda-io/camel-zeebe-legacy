@@ -1,10 +1,10 @@
 package io.zeebe.camel.helper;
 
 import io.zeebe.camel.ZeebeComponent;
-import io.zeebe.camel.api.CompleteTaskCommand;
 import io.zeebe.client.event.WorkflowInstanceEvent;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.CamelContext;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 
 public class Steps
@@ -37,6 +37,12 @@ public class Steps
                                                              .execute();
 
     }
+
+    public MockEndpoint mockEndpoint(String uri) {
+        return getContext().getEndpoint(uri, MockEndpoint.class);
+    }
+
+
     public ZeebeTestRule getZeebe()
     {
         return zeebe;

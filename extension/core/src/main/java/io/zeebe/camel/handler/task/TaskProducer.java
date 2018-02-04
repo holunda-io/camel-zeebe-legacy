@@ -1,7 +1,7 @@
 package io.zeebe.camel.handler.task;
 
 import io.zeebe.camel.ZeebeProducer;
-import io.zeebe.camel.api.CompleteTaskCommand;
+import io.zeebe.camel.api.command.CompleteTaskCommand;
 import io.zeebe.client.event.TaskEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;

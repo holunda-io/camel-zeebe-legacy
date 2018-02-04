@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import io.zeebe.client.event.Event;
 import io.zeebe.client.event.EventMetadata;
+import io.zeebe.client.event.GeneralEvent;
 import org.apache.camel.Exchange;
 
 public class CreateExchangeForEvent implements Function<Event, Exchange>
@@ -34,20 +35,22 @@ public class CreateExchangeForEvent implements Function<Event, Exchange>
     public Exchange apply(final Event event)
     {
         final Exchange exchange = exchangeSupplier.get();
+
+        exchange.getIn().setMessageId(Long.toString(event.getMetadata().getKey()) + "-" + event.getMetadata().getPosition());
         exchange.getIn().setHeaders(createHeader.apply(event.getMetadata()));
 
         String state = null;
         try
         {
+            // state might not be available and throw UnsupportedOperation.
             state = event.getState();
+
         }
         catch (RuntimeException e)
         {
             // ignore
         }
         exchange.getIn().setHeader("state", state);
-        exchange.getIn().setMessageId(Long.toString(event.getMetadata().getKey()));
-
         exchange.getIn().setBody(event);
 
         return exchange;

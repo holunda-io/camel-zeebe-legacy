@@ -1,7 +1,7 @@
 package io.zeebe.camel.handler.task;
 
-import io.zeebe.camel.api.EventMetadata;
-import io.zeebe.camel.api.TaskEvent;
+import io.zeebe.camel.api.event.EventMetadata;
+import io.zeebe.camel.api.event.TaskEvent;
 import io.zeebe.client.event.impl.TaskEventImpl;
 import io.zeebe.client.impl.data.MsgPackConverter;
 import org.apache.camel.Converter;
@@ -22,23 +22,23 @@ public class TaskConverter
                                                     .build();
 
         return TaskEvent.builder()
-                                        .metadata(metadata)
-                                        .state(taskEvent.getState())
-                                        .customHeaders(taskEvent.getCustomHeaders())
-                                        .getPayload(taskEvent.getPayload())
-                                        .headers(taskEvent.getHeaders())
-                                        .lockTime(taskEvent.getLockExpirationTime().getEpochSecond())
-                                        .lockOwner(taskEvent.getLockOwner())
-                                        .retries(taskEvent.getRetries())
-                                        .type(taskEvent.getType())
+                        .metadata(metadata)
+                        .state(taskEvent.getState())
+                        .customHeaders(taskEvent.getCustomHeaders())
+                        .getPayload(taskEvent.getPayload())
+                        .headers(taskEvent.getHeaders())
+                        .lockTime(taskEvent.getLockExpirationTime().getEpochSecond())
+                        .lockOwner(taskEvent.getLockOwner())
+                        .retries(taskEvent.getRetries())
+                        .type(taskEvent.getType())
 
-                                        .build();
+                        .build();
     }
 
     @Converter
     public static TaskEventImpl convert(final TaskEvent taskEvent)
     {
-        TaskEventImpl zeebeTask = new TaskEventImpl(taskEvent.getState(), new MsgPackConverter());
+        final TaskEventImpl zeebeTask = new TaskEventImpl(taskEvent.getState(), new MsgPackConverter());
 
         zeebeTask.setCustomHeaders(taskEvent.getCustomHeaders());
         zeebeTask.setHeaders(taskEvent.getHeaders());

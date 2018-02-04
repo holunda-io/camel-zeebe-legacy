@@ -14,6 +14,7 @@ import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
+import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
 
 /**
@@ -34,24 +35,9 @@ public class UniversalEventEndpoint extends ZeebeEndpoint
     /**
      * The name.
      */
-    @UriPath
+    @UriParam
     @Metadata(required = "true")
     private String name;
-
-    /**
-     * just to fill the space.
-     * TODO: remove
-     */
-    @UriPath
-    @Metadata(required = "true")
-    private String option;
-
-    /**
-     * The topic to subscribe to.
-     */
-    @UriPath
-    @Metadata(required = "true")
-    private String topic;
 
     public UniversalEventEndpoint(final EndpointConfiguration configuration)
     {

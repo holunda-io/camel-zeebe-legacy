@@ -4,9 +4,15 @@ Camel routing for zeebe clients
 
 ## Use Cases
 
-### Publish general events to route (wip)
+### Publish general events to route
 
 A zeebe component registers to a topic and forwards all general events received to the route.
+
+Syntax
+
+`from(zeebe://<TOPIC>(?name=<NAME>))`
+
+if name is not set, a random Uuid value is chosen.
 
 Applications:
 

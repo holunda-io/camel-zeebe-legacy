@@ -1,9 +1,10 @@
-package io.zeebe.camel;
+package io.zeebe.camel.handler.task;
 
-import io.zeebe.camel.api.CompleteTaskCommand;
-import io.zeebe.camel.handler.task.TaskConverter;
+import static io.zeebe.camel.ZeebeComponent.DEFAULT_TOPIC;
+
+import io.zeebe.camel.api.command.CompleteTaskCommand;
+import io.zeebe.camel.handler.universal.UniversalEventUri;
 import io.zeebe.camel.helper.Steps;
-import io.zeebe.client.event.TaskEvent;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -47,7 +48,7 @@ public class TaskEndpointTest
         @Test
         public void start_and_complete_task() throws Exception
         {
-            MockEndpoint mock = new MockEndpoint();
+            MockEndpoint mock = steps.mockEndpoint("mock:received");
 
             steps.getContext().addRoutes(new RouteBuilder()
             {
@@ -56,31 +57,26 @@ public class TaskEndpointTest
                 {
 
                     // subscribes to tasks on zeebeClient and forwards to jms
-                    from("zeebe:task:create?option=foo")
-                        .convertBodyTo(io.zeebe.camel.api.TaskEvent.class)
+                    from(TaskUri.topic(DEFAULT_TOPIC).type("doSomething").lockOwner("remote").get())
+                        .convertBodyTo(io.zeebe.camel.api.event.TaskEvent.class)
                         .to("direct:someMessageSystemCreate");
 
                     from("direct:someMessageSystemCreate")
 
-                        .process(new Processor()
-                    {
-                        @Override
-                        public void process(Exchange exchange) throws Exception
-                        {
-                            io.zeebe.camel.api.TaskEvent taskEvent = exchange.getIn().getBody(io.zeebe.camel.api.TaskEvent.class);
+                        .process(exchange -> {
+                            io.zeebe.camel.api.event.TaskEvent taskEvent = exchange.getIn().getBody(io.zeebe.camel.api.event.TaskEvent.class);
                             final CompleteTaskCommand completeTaskCommand = CompleteTaskCommand.builder()
                                                                                                .task(taskEvent)
                                                                                                .payload("{\"bar\":\"hello\"}")
                                                                                                .build();
 
                             exchange.getIn().setBody(completeTaskCommand, CompleteTaskCommand.class);
-                        }
-                    }).to("direct:someMessageSystemComplete");
+                        }).to("direct:someMessageSystemComplete");
 
                     // reads from jms and sends completeTaskCommand to producer
-                    from("direct:someMessageSystemComplete").to("log:message").to("zeebe:task:complete");
+                    from("direct:someMessageSystemComplete").to("log:message").to(TaskUri.topic(DEFAULT_TOPIC).type("doSomething").lockOwner("remote").get());
 
-                    from("zeebe:universal-event:subscribe").to("log:message");
+                  from(UniversalEventUri.topic(DEFAULT_TOPIC).name("log").get()).to("log:message");
                 }
             });
 

@@ -1,15 +1,16 @@
-package io.zeebe.camel;
+package io.zeebe.camel.handler.universal;
 
 import io.zeebe.camel.helper.Steps;
 import io.zeebe.test.ZeebeTestRule;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class SubscribeToGeneralEventsOnTopicTest
+public class UniversalEventConsumerITest
 {
     @Rule
     public final ZeebeTestRule zeebe = new ZeebeTestRule();
@@ -30,23 +31,28 @@ public class SubscribeToGeneralEventsOnTopicTest
     @Test
     public void subscribe_and_consume_generalEvents() throws Exception
     {
+        final MockEndpoint mock = steps.mockEndpoint("mock:receive");
+
+        // expect two messages (create/created)
+        mock.expectedMessageCount(2);
+        mock.expectedHeaderReceived("eventType", "WORKFLOW");
+
         steps.getContext().addRoutes(new RouteBuilder()
         {
             @Override
             public void configure() throws Exception
             {
-                from("zeebe:universal-event:subscribe?option=hello").to("direct:foo");
-
-                from("direct:foo").to("log:message");
+                from(UniversalEventUri.topic("default-topic").get())
+                    .to("log:message")
+                    .to("mock:receive");
             }
         });
 
         steps.getContext().start();
-
         steps.deploy();
-        steps.startProcess();
 
-        Thread.sleep(2000L);
+        // 2 messages received
+        mock.assertIsSatisfied();
     }
 
 }
