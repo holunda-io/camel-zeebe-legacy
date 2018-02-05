@@ -1,4 +1,4 @@
-# zeebe-camel
+# camel-zeebe
 
 Camel routing for zeebe clients.
 
