@@ -5,31 +5,39 @@
 
 Apache Camel routing for Zeebe clients.
 
-[![Overview](https://github.com/holunda-io/camel-zeebe/blob/master/docs/camel-zeebe-flow.png?raw=true)]
+![Overview](https://github.com/holunda-io/camel-zeebe/blob/master/docs/camel-zeebe-flow.png?raw=true)
 
 Zeebe is a microservice orchestration platform, that supports a centralized
-broker and distributed client-workers that handle actual tasks in the overall workflow.
+broker and distributed client-workers that handle actual tasks in the overall workflow. It provides clients in different
+languages which allows for to integrate with it. 
 
-Downfall: Zeebe's broker/client communication requires direct access via tcp host/port.
-We noticed that this can become a problem when you have distributed (micro-)workers,
+The downfall is that Zeebe's broker/client communication requires direct access via TCP/IP host/port.
+We noticed that this can become a problem when you have distributed (micro-)workers deployed in cloud scenarios,
 because you rely on direct access to the broker.
 
-For example: if you want to implement the worker as an AWS/lambda, you won't have 
+For example, if you want to implement the worker as an AWS/lambda, you won't have 
 that direct access available, you will have to work with some proprietary 
 messaging (SNS in this case). A lot of other use cases are thinkable in which a lightweight 
 integration of task workers without relying on direct access to the Zeebe broker is required.
 
-This is the motivation for the camel-zeebe library providing an integration mechanism with Apache Camel. Apache Camel
-is a well-established integration library implementing dozens of Enterprise Integration Patterns.
+Instead of implementation a set of adapters to different cloud and platform providers, we focus on implementation of an adapter to a 
+famous and a well-established integration library Apache Camel. By doing so we provide access to a vast amount of protocols by adopting
+the Zeebe's orchestration semantics to Apache Camel endpoint scheme. Apache Camel is a well-established integration library implementing 
+dozens of Enterprise Integration Patterns.
 
+Here are some key features for using camel-zeebe and Apache Camel for your application:
 
 * you run a broker ring on some host / isolated LAN segment
-* you implement Zeebe client adapters that are located close to the broker and have direct access to it via TCP/IP.
-* those adapters register and hold subscriptions on various Zeebe topics and tasks and forward the events emitted to a Apache Camel route (which might end with propagation of the event to an external messaging system)
-* you implement a task worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand (currently, only the CompleteTaskCommand is supported)
+
+* you configure Zeebe client adapters that are located close to the broker and have direct access to it via TCP/IP. Those 
+adapters register and hold subscriptions on various Zeebe topics and tasks and forward the events emitted to a 
+Apache Camel route (which might end with propagation of the event to an external messaging system)
+* you implement a simple Apache Camel route, which holds the configuration of your adapters
+* you implement a task worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand 
+(currently, only the CompleteTaskCommand is supported)
+* the entire protocol and data format conversion between your messaging and Zeebe is done by Apache Camel runtime.
 * the command is published to a messaging system and consumed again by a Zeebe client adapter close to the broker.
 * the camel-zeebe component receives the command and closes the task.
-
 
 
 ## Use Cases
@@ -38,11 +46,11 @@ is a well-established integration library implementing dozens of Enterprise Inte
 
 A Zeebe component registers to a topic and forwards all general events received to the route.
 
-Syntax
+Syntax:
 
 `from(zeebe://<TOPIC>(?name=<NAME>)).to(<messaging>:<someChannel>)`
 
-"name" is the subscription name, if it is not set, a random UUID value is chosen.
+`<NAME>` is the subscription name, if it is not set, a random UUID value is chosen.
 
 Applications:
 
@@ -58,16 +66,19 @@ Zeebe.
 
 `from(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>).to(<messaging>:<someChannel>)`
 
-This will inform external workers for the given taskType that are subscribed to the messaging channel.
+This will inform external workers for the given `TASK_TYPE` that are subscribed to the messaging channel.
 
 **Syntax (complete work):**
 
 * Adapter side: `from(<messaging>:<someChannel>).to(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>)`
 
-This will forward CompleteTaskCommands to the zeebe client subscription and finish them.
+This will forward CompleteTaskCommands to the Zeebe client subscription and finish them.
 
 * Worker side - TODO, see TaskEndpointTest for a Processor based example.
 
+Applications:
+
+* Implement the orchestration of microservices located in (one/several) clouds which are accessible using some specific protocols only.
 
 ## Decisions
 
@@ -77,7 +88,7 @@ This will forward CompleteTaskCommands to the zeebe client subscription and fini
 
 ## Project setup
 
-`camel-zeebe` is implemented as a maven multi-module project.
+`camel-zeebe` is implemented as a Apache Maven multi-module project. Run `./mvnw clean install` to build it.
 
 ### extension
 
@@ -85,13 +96,13 @@ These are the only modules that a user would depend on to use the features.
 
 **api** 
 
-Commands and events that are used for remote communication. These will not rely on zeebe, they can be used as regular POJOs.
-Use these to implement a remote worker that subscribes to a message-channel, works on TaskEvents and sends back TaskCommands.
+Commands and events that are used for remote communication. These don't not rely on Zeebe API and can be used as regular POJOs.
+Use these to implement a remote worker that subscribes to a message-channel, works on `TaskEvent`s and sends back `TaskCommand`s.
 
 **core**
 
-This provides the needed Apache Camel component and allows implementing subscriptions that forward events to some message channel 
-supported by Apache Camel (so in fact: every one).
+This provides the Apache Camel component and allows implementing subscriptions that forward Zeebe events to any message channel 
+supported by Apache Camel (so in fact: every one) and send the results back to Zeebe.
 
 It was setup via Camel archetypes, using this syntax:
 
@@ -101,7 +112,7 @@ It was setup via Camel archetypes, using this syntax:
 
 **spring**
 
-Uses core to support camel-zeebe setup via Spring
+Uses core to support camel-zeebe setup via Spring. 
 
 ### test
 
