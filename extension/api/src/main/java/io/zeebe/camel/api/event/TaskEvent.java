@@ -3,6 +3,8 @@ package io.zeebe.camel.api.event;
 import java.util.Map;
 
 import lombok.Builder;
+import lombok.NonNull;
+import lombok.Singular;
 import lombok.Value;
 
 @Value
@@ -13,6 +15,7 @@ public class TaskEvent implements ZeebeEvent
     /**
      * @return the events metadata, such as its key or the topic and partition it belongs to
      */
+    @NonNull
     private final EventMetadata metadata;
 
     /**
@@ -24,6 +27,7 @@ public class TaskEvent implements ZeebeEvent
     /**
      * @return the task's type
      */
+    @NonNull
     private final String type;
 
     /**
@@ -31,31 +35,39 @@ public class TaskEvent implements ZeebeEvent
      *   created in the context of workflow instance, the header provide context information
      *   on which activity is executed, etc.
      */
+    @NonNull
+    @Singular
     private final  Map<String, Object> headers;
 
     /**
      * @return user-defined headers associated with this task
      */
+    @NonNull
+    @Singular
     private final Map<String, Object> customHeaders;
 
     /**
      * @return the lock owner
      */
+    @NonNull
     private final String lockOwner;
 
     /**
      * @return remaining retries
      */
+    @NonNull
     private final Integer retries;
 
     /**
      * @return the time until when the task is locked
      *   and can be exclusively processed by this client.
      */
+    @NonNull
     private final long lockTime;
 
     /**
      * @return JSON-formatted payload
      */
-    private final String getPayload;
+    @NonNull
+    private final String payload;
 }

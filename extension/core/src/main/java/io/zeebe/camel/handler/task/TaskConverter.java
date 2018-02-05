@@ -1,19 +1,21 @@
 package io.zeebe.camel.handler.task;
 
+import java.util.Optional;
+
+import org.apache.camel.Converter;
+
 import io.zeebe.camel.api.event.EventMetadata;
 import io.zeebe.camel.api.event.TaskEvent;
 import io.zeebe.client.event.impl.TaskEventImpl;
 import io.zeebe.client.impl.data.MsgPackConverter;
-import org.apache.camel.Converter;
 
 @Converter
 public class TaskConverter
 {
 
     @Converter
-    public static TaskEvent convert(io.zeebe.client.event.TaskEvent taskEvent)
+    public static TaskEvent convert(TaskEventImpl taskEvent)
     {
-
         final EventMetadata metadata = EventMetadata.builder()
                                                     .key(taskEvent.getMetadata().getKey())
                                                     .partitionId(taskEvent.getMetadata().getPartitionId())
@@ -25,13 +27,12 @@ public class TaskConverter
                         .metadata(metadata)
                         .state(taskEvent.getState())
                         .customHeaders(taskEvent.getCustomHeaders())
-                        .getPayload(taskEvent.getPayload())
+                        .payload(taskEvent.getPayload())
                         .headers(taskEvent.getHeaders())
-                        .lockTime(taskEvent.getLockExpirationTime().getEpochSecond())
+                        .lockTime(taskEvent.getLockTime())
                         .lockOwner(taskEvent.getLockOwner())
                         .retries(taskEvent.getRetries())
                         .type(taskEvent.getType())
-
                         .build();
     }
 
@@ -40,11 +41,12 @@ public class TaskConverter
     {
         final TaskEventImpl zeebeTask = new TaskEventImpl(taskEvent.getState(), new MsgPackConverter());
 
-        zeebeTask.setCustomHeaders(taskEvent.getCustomHeaders());
-        zeebeTask.setHeaders(taskEvent.getHeaders());
+        Optional.ofNullable(taskEvent.getCustomHeaders()).ifPresent(h -> zeebeTask.setCustomHeaders(h));
+        Optional.ofNullable(taskEvent.getHeaders()).ifPresent(h -> zeebeTask.setHeaders(h));
+
         zeebeTask.setLockOwner(taskEvent.getLockOwner());
         zeebeTask.setLockTime(taskEvent.getLockTime());
-        zeebeTask.setPayload(taskEvent.getGetPayload());
+        zeebeTask.setPayload(taskEvent.getPayload());
         zeebeTask.setRetries(taskEvent.getRetries());
         zeebeTask.setType(taskEvent.getType());
 

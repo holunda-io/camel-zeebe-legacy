@@ -1,1 +1,2 @@
 io.zeebe.camel.handler.task.TaskConverter
+io.zeebe.camel.handler.universal.GeneralEventConverter
