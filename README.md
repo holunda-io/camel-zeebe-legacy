@@ -12,7 +12,7 @@ because you rely on direct access to the broker.
 For example: when you want to implement the worker as an AWS/lambda, you wont have 
 that direct access available, you will have to work with some proprietary 
 messaging (SNS in this case). A lot of other use cases are thinkable where would like to have a lightweight 
-integration of task workers ithout relying on direct access to the zeebe broker.
+integration of task workers without relying on direct access to the zeebe broker.
 
 This is the motivation for the camel-zeebe integration:
 
