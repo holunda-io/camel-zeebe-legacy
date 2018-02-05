@@ -10,4 +10,4 @@ cache:
     - $HOME/.m2
 script: ./mvnw clean verify
 after_success: 
-- bash <(curl -s https://codecov.io/bash) -t repository-upload-token
+- bash <(curl -s https://codecov.io/bash)
