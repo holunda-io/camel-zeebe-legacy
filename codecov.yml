@@ -1,0 +1,4 @@
+fixes:
+- "io/zeebe/camel/camel-zeebe-api::extension/api/src/main/java/"
+- "io/zeebe/camel/camel-zeebe-core::extension/core/src/main/java/"
+- "io/zeebe/camel/camel-zeebe-spring::extension/spring/src/main/java/"
