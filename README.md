@@ -1,7 +1,7 @@
 # Camel Zeebe
 
-[![Build Status](https://travis-ci.org/holunda/camel-zeebe.svg?branch=master)](https://travis-ci.org/holunda/camel-zeebe)
-[![codecov](https://codecov.io/gh/holunda/camel-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/holunda/camel-zeebe) 
+[![Build Status](https://travis-ci.org/holunda-io/camel-zeebe.svg?branch=master)](https://travis-ci.org/holunda-io/camel-zeebe)
+[![codecov](https://codecov.io/gh/holunda-io/camel-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/holunda-io/camel-zeebe) 
 
 Apache Camel routing for Zeebe clients.
 
