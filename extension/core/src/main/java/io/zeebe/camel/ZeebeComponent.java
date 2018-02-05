@@ -53,7 +53,7 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
 
     protected ZeebeEndpoint createEndpoint(final EndpointConfiguration configuration) throws Exception
     {
-        log.info("creating endpoint configuration={}", configuration);
+        log.info("creating endpoint. Configuration={}", configuration);
 
         final ZeebeEndpoint endpoint = configuration.createEndpoint();
         setProperties(endpoint, configuration.getParameters());

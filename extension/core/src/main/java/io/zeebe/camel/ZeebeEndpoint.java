@@ -40,14 +40,14 @@ public abstract class ZeebeEndpoint extends DefaultEndpoint implements ClientSup
     @Override
     public Producer createProducer() throws Exception
     {
-        log.debug("createProducer: consumerOnly -> return null");
+        log.debug("CreateProducer from abstract implementation: consumerOnly -> return null");
         return null;
     }
 
     @Override
     public Consumer createConsumer(Processor processor) throws Exception
     {
-        log.debug("createConsumer: producerOnly -> return null");
+        log.debug("CreateConsumer from abstract implementation: producerOnly -> return null");
         return null;
     }
 

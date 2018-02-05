@@ -5,6 +5,8 @@
 
 Apache Camel routing for Zeebe clients.
 
+[![Overview](https://github.com/holunda-io/camel-zeebe/blob/master/docs/camel-zeebe-flow.png?raw=true)]
+
 Zeebe is a microservice orchestration platform, that supports a centralized
 broker and distributed client-workers that handle actual tasks in the overall workflow.
 
@@ -17,7 +19,9 @@ that direct access available, you will have to work with some proprietary
 messaging (SNS in this case). A lot of other use cases are thinkable in which a lightweight 
 integration of task workers without relying on direct access to the Zeebe broker is required.
 
-This is the motivation for the camel-zeebe library providing an integration mechanism with Apache Camel:
+This is the motivation for the camel-zeebe library providing an integration mechanism with Apache Camel. Apache Camel
+is a well-established integration library implementing dozens of Enterprise Integration Patterns.
+
 
 * you run a broker ring on some host / isolated LAN segment
 * you implement Zeebe client adapters that are located close to the broker and have direct access to it via TCP/IP.
@@ -25,6 +29,8 @@ This is the motivation for the camel-zeebe library providing an integration mech
 * you implement a task worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand (currently, only the CompleteTaskCommand is supported)
 * the command is published to a messaging system and consumed again by a Zeebe client adapter close to the broker.
 * the camel-zeebe component receives the command and closes the task.
+
+
 
 ## Use Cases
 
@@ -90,7 +96,7 @@ supported by Apache Camel (so in fact: every one).
 It was setup via Camel archetypes, using this syntax:
 
 ```
-./mvnw archetype:generate -B -DarchetypeGroupId=org.apache.camel.archetypes -DarchetypeArtifactId=camel-archetype-api-component -DarchetypeVersion=2.20.2 -DgroupId=io.zeebe.camel -DartifactId=camel-zeebe-api -Dname=CamelZeebe  -Dscheme=zeebe-api
+./mvnw archetype:generate -B -DarchetypeGroupId=org.apache.camel.archetypes -DarchetypeArtifactId=camel-archetype-api-component -DarchetypeVersion=2.20.2 -DgroupId=io.zeebe.camel -DartifactId=camel-zeebe-api -Dname=CamelZeebe -Dscheme=zeebe-api
 ```
 
 **spring**
@@ -107,5 +113,4 @@ These will not get deployed to the repo, they are playgrounds to better understa
 integration and can be used as a reference how to work with camel-zeebe in different scenarios.
 
 TODO: currently, this is messy, most of it can be kicked out.   
-
 

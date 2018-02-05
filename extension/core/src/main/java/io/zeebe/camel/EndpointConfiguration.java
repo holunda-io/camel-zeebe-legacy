@@ -10,10 +10,16 @@ import lombok.ToString;
 @ToString
 public class EndpointConfiguration
 {
+
+    private static final String TOPIC = "topic";
+    private static final String SUBJECT = "subject";
+    private static final String TYPE = "type";
+    public static final String DELIMITER = "/";
+
     public static Remaining remaining(String remaining) {
         return new Remaining(remaining);
     }
-    public static final String DELIMITER = "/";
+
 
     @Getter
     @ToString
@@ -26,7 +32,7 @@ public class EndpointConfiguration
         private Remaining(final String remaining)
         {
             if (remaining == null || "".equals(remaining.trim())) {
-                throw new IllegalArgumentException("remaining must not be null or blank!");
+                throw new IllegalArgumentException("Remaining must not be null or blank.");
             }
 
             final String[] parts = remaining.split(DELIMITER);
@@ -37,9 +43,6 @@ public class EndpointConfiguration
 
     }
 
-    /**
-     *
-     */
     @Getter
     private final String uri;
 
@@ -63,9 +66,9 @@ public class EndpointConfiguration
         handler = Objects.requireNonNull(Handler.BY_SUBJECT.get(getSubject()), String.format("Unsupported syntax: '%s', use one of %s", getSubject(), Handler.BY_SUBJECT.keySet()));
 
         this.parameters.putAll(parameters);
-        this.parameters.put("topic", this.remaining.topic);
-        this.parameters.put("subject", this.remaining.subject.orElse(null));
-        this.parameters.put("type", this.remaining.type.orElse(null));
+        this.parameters.put(TOPIC, this.remaining.topic);
+        this.parameters.put(SUBJECT, this.remaining.subject.orElse(null));
+        this.parameters.put(TYPE, this.remaining.type.orElse(null));
 
         this.component = component;
     }

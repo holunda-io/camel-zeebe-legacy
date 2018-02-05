@@ -12,5 +12,4 @@ public abstract class ZeebeProducer<ZE extends ZeebeEndpoint> extends DefaultPro
         this.endpoint = endpoint;
     }
 
-
 }

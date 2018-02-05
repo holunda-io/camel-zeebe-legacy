@@ -48,7 +48,7 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends De
     @Override
     protected void doStop() throws Exception
     {
-        log.info("stopping consumer ....");
+        log.info("Stopping consumer {}.", this.getClass());
         Optional.ofNullable(subscriptionAdapter).filter(SubscriptionAdapter::isNotClosed).ifPresent(SubscriptionAdapter::close);
     }
 

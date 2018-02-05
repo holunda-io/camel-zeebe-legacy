@@ -51,7 +51,6 @@ public class CamelZeebeUri<T extends CamelZeebeUri<T>> implements Supplier<Strin
     {
         final StringBuilder resultBuilder = new StringBuilder(ZeebeComponent.SCHEME);
         resultBuilder.append(uriFormat ? "://" : ":");
-
         resultBuilder.append(getBase());
 
         if (!parameters.isEmpty())

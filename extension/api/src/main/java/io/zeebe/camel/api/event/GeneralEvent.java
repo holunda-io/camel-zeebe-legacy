@@ -3,23 +3,25 @@ package io.zeebe.camel.api.event;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * Represents a general Zeebe event.
+ */
 @Value
 @Builder
 public class GeneralEvent implements ZeebeEvent
 {
     /**
-     * @return the events metadata, such as its key or the topic and partition it belongs to
+     * The events metadata, such as its key or the topic and partition it belongs to
      */
-    private EventMetadata metadata;
+    private final EventMetadata metadata;
 
     /**
-     * @return the name of the state in the event's lifecycle. The lifecycle is different for each type
-     *   of event.
+     * The name of the state in the event's lifecycle. The lifecycle is different for each type of event.
      */
-    String state;
+    private final String state;
 
     /**
-     * @return event encoded as JSON
+     * Event encoded as JSON.
      */
-    String json;
+    private final String json;
 }
