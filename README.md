@@ -1,39 +1,42 @@
-# camel-zeebe
+# Camel Zeebe
 
-Camel routing for zeebe clients.
+[![Build Status](https://travis-ci.org/holunda/camel-zeebe.svg?branch=master)](https://travis-ci.org/holunda/camel-zeebe)
+[![codecov](https://codecov.io/gh/holunda/camel-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/holunda/camel-zeebe) 
+
+Apache Camel routing for Zeebe clients.
 
 Zeebe is a microservice orchestration platform, that supports a centralized
 broker and distributed client-workers that handle actual tasks in the overall workflow.
 
-Downfall: Zeebes broker/client communication requires direct access via tcp host/port.
+Downfall: Zeebe's broker/client communication requires direct access via tcp host/port.
 We noticed that this can become a problem when you have distributed (micro-)workers,
 because you rely on direct access to the broker.
 
-For example: when you want to implement the worker as an AWS/lambda, you wont have 
+For example: if you want to implement the worker as an AWS/lambda, you won't have 
 that direct access available, you will have to work with some proprietary 
-messaging (SNS in this case). A lot of other use cases are thinkable where would like to have a lightweight 
-integration of task workers without relying on direct access to the zeebe broker.
+messaging (SNS in this case). A lot of other use cases are thinkable in which a lightweight 
+integration of task workers without relying on direct access to the Zeebe broker is required.
 
-This is the motivation for the camel-zeebe integration:
+This is the motivation for the camel-zeebe library providing an integration mechanism with Apache Camel:
 
-* you run a broker ring on some host
-* you implement zeebe-client adapters that are located close to the broker and have direct access via tcp.
-* those adapters register and hold subscriptions on various zeebe topics and tasks and forward the events emitted to a camel route (which might end with proagation of the event to an external messaging system)
-* you implement a task worker that has no dependency on zeebe, it just consumes a TaskEvent and produces a task command (currently, only the CompleteTaskCommand is supported)
-* the command is published to a messaging system and consumed again by a zeebe-client adapter close to the broker.
+* you run a broker ring on some host / isolated LAN segment
+* you implement Zeebe client adapters that are located close to the broker and have direct access to it via TCP/IP.
+* those adapters register and hold subscriptions on various Zeebe topics and tasks and forward the events emitted to a Apache Camel route (which might end with propagation of the event to an external messaging system)
+* you implement a task worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand (currently, only the CompleteTaskCommand is supported)
+* the command is published to a messaging system and consumed again by a Zeebe client adapter close to the broker.
 * the camel-zeebe component receives the command and closes the task.
 
 ## Use Cases
 
 ### Publish general events to route
 
-A zeebe component registers to a topic and forwards all general events received to the route.
+A Zeebe component registers to a topic and forwards all general events received to the route.
 
 Syntax
 
 `from(zeebe://<TOPIC>(?name=<NAME>)).to(<messaging>:<someChannel>)`
 
-"name" is the subscription name, if it is not set, a random Uuid value is chosen.
+"name" is the subscription name, if it is not set, a random UUID value is chosen.
 
 Applications:
 
@@ -43,7 +46,7 @@ Applications:
 
 Registers a subscription for a combination of topic and taskType. When a task is created, it
 converts the internal taskEvent to an API TaskEvent that has no dependencies on 
-zeebe. 
+Zeebe. 
 
 **Syntax (start work):**
 
@@ -60,12 +63,10 @@ This will forward CompleteTaskCommands to the zeebe client subscription and fini
 * Worker side - TODO, see TaskEndpointTest for a Processor based example.
 
 
-
 ## Decisions
 
-* The zeebe client is passed to the component directly, configuring the client is not part of the endpoint configuration.
+* The Zeebe client is passed to the component directly, configuring the client is not part of the endpoint configuration.
 * The `component#createEndpoint()` will be a factory that can create specific endpoints for each use case.
-
 
 
 ## Project setup
@@ -83,10 +84,10 @@ Use these to implement a remote worker that subscribes to a message-channel, wor
 
 **core**
 
-This provides the neede camel component and allows implementing subsriptions that forward events to some message channel 
-supported by camel (so in fact: every one).
+This provides the needed Apache Camel component and allows implementing subscriptions that forward events to some message channel 
+supported by Apache Camel (so in fact: every one).
 
-It was setup via camel archetypes, using this syntacx:
+It was setup via Camel archetypes, using this syntax:
 
 ```
 ./mvnw archetype:generate -B -DarchetypeGroupId=org.apache.camel.archetypes -DarchetypeArtifactId=camel-archetype-api-component -DarchetypeVersion=2.20.2 -DgroupId=io.zeebe.camel -DartifactId=camel-zeebe-api -Dname=CamelZeebe  -Dscheme=zeebe-api
@@ -94,7 +95,7 @@ It was setup via camel archetypes, using this syntacx:
 
 **spring**
 
-Uses core to support camel-zeebe setup via spring
+Uses core to support camel-zeebe setup via Spring
 
 ### test
 
@@ -103,7 +104,7 @@ Provides common test libraries and helpers that make it easier to test camel-zee
 ### examples
 
 These will not get deployed to the repo, they are playgrounds to better understand
-itegration and can be used as a reference how to work with camel-zeebe in different scenarios.
+integration and can be used as a reference how to work with camel-zeebe in different scenarios.
 
 TODO: currently, this is messy, most of it can be kicked out.   
 
