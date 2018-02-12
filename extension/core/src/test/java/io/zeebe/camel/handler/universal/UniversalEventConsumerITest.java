@@ -1,14 +1,14 @@
 package io.zeebe.camel.handler.universal;
 
-import io.zeebe.camel.helper.Steps;
-import io.zeebe.test.ZeebeTestRule;
-import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.zeebe.camel.helper.Steps;
+import io.zeebe.test.ZeebeTestRule;
 
 public class UniversalEventConsumerITest
 {
@@ -55,4 +55,27 @@ public class UniversalEventConsumerITest
         mock.assertIsSatisfied();
     }
 
+    @Test
+    public void marshal_to_json() throws Exception {
+        final MockEndpoint mock = steps.mockEndpoint("mock:receive");
+
+        steps.getContext().addRoutes(UniversalEventUri.topic("default-topic")
+            .route()
+            //.toJson()
+            .logger("universal-handler")
+            .to("direct:fire-and-forget")
+        );
+
+        steps.getContext().addRoutes(new RouteBuilder() {
+                                         @Override
+                                         public void configure() throws Exception {
+                                             from("direct:fire-and-forget")
+                                                 .to(mock);
+                                         }
+                                     }
+        );
+
+        steps.getContext().start();
+        steps.deploy();
+    }
 }

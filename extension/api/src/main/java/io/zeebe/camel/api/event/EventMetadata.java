@@ -1,5 +1,8 @@
 package io.zeebe.camel.api.event;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -31,4 +34,20 @@ public class EventMetadata
      */
     private final long key;
 
+    private final String type;
+
+    private final String state;
+
+    public Map<String,Object> toMap() {
+        final Map<String, Object> header = new HashMap<>();
+
+        header.put("topicName", topicName);
+        header.put("partitionId", partitionId);
+        header.put("key", key);
+        header.put("position", position);
+        header.put("type", type);
+        header.put("state", state);
+
+        return header;
+    }
 }
