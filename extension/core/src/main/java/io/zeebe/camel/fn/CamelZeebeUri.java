@@ -46,6 +46,10 @@ public class CamelZeebeUri<T extends CamelZeebeUri<T>> implements Supplier<Strin
         return (T) this;
     }
 
+    public CamelZeebeRouteBuilder route() {
+        return new CamelZeebeRouteBuilder(this);
+    }
+
     @Override
     public String get()
     {

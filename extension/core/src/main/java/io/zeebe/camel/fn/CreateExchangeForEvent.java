@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.camel.Exchange;
+
 import io.zeebe.client.event.Event;
 import io.zeebe.client.event.EventMetadata;
-import io.zeebe.client.event.GeneralEvent;
-import org.apache.camel.Exchange;
 
 public class CreateExchangeForEvent implements Function<Event, Exchange>
 {
@@ -35,7 +35,6 @@ public class CreateExchangeForEvent implements Function<Event, Exchange>
     public Exchange apply(final Event event)
     {
         final Exchange exchange = exchangeSupplier.get();
-
         exchange.getIn().setMessageId(Long.toString(event.getMetadata().getKey()) + "-" + event.getMetadata().getPosition());
         exchange.getIn().setHeaders(createHeader.apply(event.getMetadata()));
 
