@@ -1,7 +1,12 @@
 package io.zeebe.camel.test;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
+import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.event.WorkflowInstanceEvent;
+import io.zeebe.test.ZeebeTestRule;
+import lombok.SneakyThrows;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.builder.RouteBuilder;
@@ -10,94 +15,131 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.event.WorkflowInstanceEvent;
-import io.zeebe.test.ZeebeTestRule;
-import lombok.SneakyThrows;
-
-public class CamelZeebeRule extends ZeebeTestRule {
+public class CamelZeebeRule extends ZeebeTestRule
+{
 
     private final Object test;
-    private final String componentFQN;
-    private final CamelContext camelContext = new DefaultCamelContext();
+    private final Class<? extends Component> componentClass;
+    private final CamelContext camelContext;
+    private final Supplier<ZeebeClient> clientSupplier;
 
     private MockEndpoint mockEndpoint;
 
-    public CamelZeebeRule(final Object test) {
-        this(test, "io.zeebe.camel.ZeebeComponent");
+    public CamelZeebeRule(final Object test)
+    {
+        this(test, new DefaultCamelContext(), "io.zeebe.camel.ZeebeComponent");
     }
 
-    public CamelZeebeRule(final Object test, String componentFQN) {
+    @SneakyThrows
+    public CamelZeebeRule(final Object test, CamelContext camelContext, final String componentFQN)
+    {
         this.test = test;
 
-        this.componentFQN = componentFQN;
+        this.componentClass = (Class<? extends Component>) Class.forName(componentFQN);
+        this.camelContext = camelContext;
+
+        this.clientSupplier = () -> getClient();
     }
 
     @Override
     @SneakyThrows
-    public Statement apply(final Statement base, final Description description) {
-        try {
-            final Class<?> zeebe = Class.forName(componentFQN);
-            String scheme = (String) zeebe.getDeclaredField("SCHEME").get(null);
-            Component zeebeComponent = (Component) zeebe.getConstructor(ZeebeClient.class).newInstance(getClient());
-
-            camelContext.addComponent(scheme, zeebeComponent);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        CamelZeebeTest annotation = description.getAnnotation(CamelZeebeTest.class);
+    public Statement apply(final Statement base, final Description description)
+    {
+        final CamelZeebeTest annotation = description.getAnnotation(CamelZeebeTest.class);
 
         Method method = description.getTestClass().getDeclaredMethod(annotation.routeBuilder());
         method.setAccessible(true);
         RouteBuilder routeBuilder = (RouteBuilder) method.invoke(test);
 
-        if(!"".equals(annotation.mockEndpoint())) {
-            camelContext.getEndpoint(annotation.mockEndpoint(), MockEndpoint.class);
+
+        if (!"".equals(annotation.mockEndpoint()))
+        {
+            mockEndpoint = camelContext.getEndpoint(annotation.mockEndpoint(), MockEndpoint.class);
         }
 
-        camelContext.addRoutes(routeBuilder);
-        camelContext.start();
+        return new Statement()
+        {
+            @Override
+            public void evaluate() throws Throwable
+            {
+                before();
+                try
+                {
+                    camelContext.addRoutes(routeBuilder);
+                    camelContext.start();
 
-        return super.apply(base, description);
+                    base.evaluate();
+                }
+                finally
+                {
+                    after();
+                }
+            }
+        };
     }
 
     @Override
-    protected void before() {
+    protected void before()
+    {
         super.before();
+
+        registerComponent();
+
     }
 
     @Override
-    protected void after() {
+    protected void after()
+    {
         super.after();
-        try {
+        try
+        {
             camelContext.stop();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public CamelContext getCamelContext() {
+    public CamelContext getCamelContext()
+    {
         return camelContext;
     }
 
-    public void deploy(String process) {
-        getClient().workflows().deploy(getDefaultTopic())
-            .addResourceFromClasspath(process)
-            .execute();
+    public void deploy(String process)
+    {
+        getClient().workflows().deploy(getDefaultTopic()).addResourceFromClasspath(process).execute();
     }
 
-    public void startProcess(String processKey, String payload) {
+    public void startProcess(String processKey, String payload)
+    {
 
-        final WorkflowInstanceEvent workflowInstance = getClient().workflows().create(getDefaultTopic())
-            .bpmnProcessId(processKey)
-            .payload(payload)
-            .latestVersion()
-            .execute();
+        final WorkflowInstanceEvent workflowInstance = getClient().workflows()
+                                                                  .create(getDefaultTopic())
+                                                                  .bpmnProcessId(processKey)
+                                                                  .payload(payload)
+                                                                  .latestVersion()
+                                                                  .execute();
 
     }
 
-    public MockEndpoint getMockEndpoint() {
+    public MockEndpoint mockEndpoint()
+    {
         return mockEndpoint;
+    }
+
+    @SneakyThrows
+    Component registerComponent()
+    {
+        String scheme = (String) componentClass.getDeclaredField("SCHEME").get(null);
+        Component component = componentClass.getConstructor(Supplier.class).newInstance(clientSupplier);
+        camelContext.addComponent(scheme, component);
+
+        return component;
+    }
+
+    Class<? extends Component> getComponentClass()
+    {
+        return componentClass;
     }
 }

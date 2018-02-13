@@ -2,6 +2,7 @@ package io.zeebe.camel;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import io.zeebe.camel.fn.ClientSupplier;
 import io.zeebe.client.ZeebeClient;
@@ -20,7 +21,7 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
 
     public static final String DEFAULT_TOPIC = "default-topic";
 
-    private final ZeebeClient client;
+    private final Supplier<ZeebeClient> client;
 
     /**
      * A new zeebe camel component is created with an existing client. The configuration/creation of the client is not
@@ -34,6 +35,11 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
      * @param client the zeebe client
      */
     public ZeebeComponent(final ZeebeClient client)
+    {
+        this(() -> Objects.requireNonNull(client, "client must not be null!"));
+    }
+
+    public ZeebeComponent(final Supplier<ZeebeClient> client)
     {
         this.client = Objects.requireNonNull(client, "client must not be null!");
     }
@@ -63,6 +69,6 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
     @Override
     public ZeebeClient getClient()
     {
-        return client;
+        return client.get();
     }
 }

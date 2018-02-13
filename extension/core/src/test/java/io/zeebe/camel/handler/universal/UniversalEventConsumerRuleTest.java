@@ -1,12 +1,10 @@
 package io.zeebe.camel.handler.universal;
 
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.zeebe.camel.test.CamelZeebeRule;
 import io.zeebe.camel.test.CamelZeebeTest;
+import org.apache.camel.builder.RouteBuilder;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class UniversalEventConsumerRuleTest
 {
@@ -17,27 +15,25 @@ public class UniversalEventConsumerRuleTest
     @CamelZeebeTest(routeBuilder = "route", mockEndpoint = "mock:receive")
     public void subscribe_and_consume_generalEvents() throws Exception
     {
-        final MockEndpoint mock = zeebe.getMockEndpoint();
-
         // expect two messages (create/created)
-        mock.expectedMessageCount(2);
-        mock.expectedHeaderReceived("eventType", "WORKFLOW");
+        zeebe.mockEndpoint().expectedMessageCount(2);
+        zeebe.mockEndpoint().expectedHeaderReceived("type", "WORKFLOW");
+        zeebe.mockEndpoint().expectedHeaderValuesReceivedInAnyOrder("state", "CREATE", "CREATED");
 
         zeebe.deploy("dummy.bpmn");
 
         // 2 messages received
-        mock.assertIsSatisfied();
+        zeebe.mockEndpoint().assertIsSatisfied();
     }
 
-    private RouteBuilder route() {
+    private RouteBuilder route()
+    {
         return new RouteBuilder()
         {
             @Override
             public void configure() throws Exception
             {
-                from(UniversalEventUri.topic("default-topic").get())
-                    .to("log:message")
-                    .to("mock:receive");
+                from(UniversalEventUri.topic("default-topic").get()).to("log:message").to("mock:receive");
             }
         };
     }
