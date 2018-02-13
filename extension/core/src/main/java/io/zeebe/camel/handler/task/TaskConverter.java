@@ -1,6 +1,6 @@
 package io.zeebe.camel.handler.task;
 
-import io.zeebe.camel.api.event.EventMetadata;
+import io.zeebe.camel.api.event.EventHeader;
 import io.zeebe.camel.api.event.TaskEvent;
 import io.zeebe.client.event.impl.TaskEventImpl;
 import io.zeebe.client.impl.data.MsgPackConverter;
@@ -14,12 +14,12 @@ public class TaskConverter
     public static TaskEvent convert(io.zeebe.client.event.TaskEvent taskEvent)
     {
 
-        final EventMetadata metadata = EventMetadata.builder()
-                                                    .key(taskEvent.getMetadata().getKey())
-                                                    .partitionId(taskEvent.getMetadata().getPartitionId())
-                                                    .position(taskEvent.getMetadata().getPosition())
-                                                    .topicName(taskEvent.getMetadata().getTopicName())
-                                                    .build();
+        final EventHeader metadata = EventHeader.builder()
+                                                .key(taskEvent.getMetadata().getKey())
+                                                .partitionId(taskEvent.getMetadata().getPartitionId())
+                                                .position(taskEvent.getMetadata().getPosition())
+                                                .topicName(taskEvent.getMetadata().getTopicName())
+                                                .build();
 
         return TaskEvent.builder()
                         .metadata(metadata)

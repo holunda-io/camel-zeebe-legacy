@@ -11,7 +11,7 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class EventMetadata
+public class EventHeader
 {
     /**
      * The name of the topic this event as published on

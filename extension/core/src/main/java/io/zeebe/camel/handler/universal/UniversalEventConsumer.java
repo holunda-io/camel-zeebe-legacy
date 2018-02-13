@@ -1,5 +1,6 @@
 package io.zeebe.camel.handler.universal;
 
+import io.zeebe.camel.fn.CreateEventHeader;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
@@ -7,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zeebe.camel.ZeebeConsumer;
-import io.zeebe.camel.api.event.EventMetadata;
+import io.zeebe.camel.api.event.EventHeader;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.event.TopicSubscription;
 import io.zeebe.client.event.UniversalEventHandler;
@@ -22,6 +23,8 @@ public class UniversalEventConsumer extends ZeebeConsumer<UniversalEventEndpoint
     private final TopicsClient client;
     private final String topic;
     private final String name;
+
+    private final CreateEventHeader createEventHeader = new CreateEventHeader();
 
     public UniversalEventConsumer(final UniversalEventEndpoint endpoint, final Processor processor)
     {
@@ -42,16 +45,7 @@ public class UniversalEventConsumer extends ZeebeConsumer<UniversalEventEndpoint
             JsonNode node = mapper.readTree(json);
             String state = node.at("/state").asText();
 
-            EventMetadata metadata = EventMetadata.builder()
-                .topicName(e.getMetadata().getTopicName())
-                .position(e.getMetadata().getPosition())
-                .partitionId(e.getMetadata().getPartitionId())
-                .key(e.getMetadata().getKey())
-                .type(e.getMetadata().getType().name())
-                .state(state)
-                .build();
-
-            exchange.getIn().setHeaders(metadata.toMap());
+            exchange.getIn().setHeaders(createEventHeader.apply(e.getMetadata(), state).toMap());
             exchange.getIn().setBody(json);
 
             getProcessor().process(exchange);

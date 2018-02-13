@@ -14,12 +14,14 @@ public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler,
 {
 
     private final TasksClient client;
+    private final String topic;
 
     public TaskCreateConsumer(final TaskEndpoint endpoint, Processor processor)
     {
         super(endpoint, processor);
 
-        client = endpoint.getClient().tasks();
+        this.client = endpoint.getClient().tasks();
+        this.topic = endpoint.getTopic();
     }
 
     @Override
@@ -41,7 +43,7 @@ public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler,
     @Override
     protected TaskSubscription createSubscription(TaskHandler handler)
     {
-        return client.newTaskSubscription("default-topic")
+        return client.newTaskSubscription(topic)
                      .lockOwner("foo")
                      .lockTime(Duration.ofSeconds(10))
                      .taskType("doSomething")
