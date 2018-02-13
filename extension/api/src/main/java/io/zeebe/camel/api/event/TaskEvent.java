@@ -15,6 +15,8 @@ public class TaskEvent implements ZeebeEvent
      */
     private final EventHeader metadata;
 
+
+
     /**
      * The name of the state in the event's lifecycle. The lifecycle is different for each type of event.
      */

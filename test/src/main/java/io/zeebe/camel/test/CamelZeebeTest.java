@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface CamelZeebeTest {
 
-    String routeBuilder();
+    String routeBuilderSupplier() default  "";
+
+    String routeBuilder() default "";
 
     String mockEndpoint() default  "";
+
 }

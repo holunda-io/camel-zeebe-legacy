@@ -1,7 +1,12 @@
 package io.zeebe.camel.test;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.event.WorkflowInstanceEvent;
@@ -9,6 +14,7 @@ import io.zeebe.test.ZeebeTestRule;
 import lombok.SneakyThrows;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
+import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -47,9 +53,6 @@ public class CamelZeebeRule extends ZeebeTestRule
     {
         final CamelZeebeTest annotation = description.getAnnotation(CamelZeebeTest.class);
 
-        Method method = description.getTestClass().getDeclaredMethod(annotation.routeBuilder());
-        method.setAccessible(true);
-        RouteBuilder routeBuilder = (RouteBuilder) method.invoke(test);
 
 
         if (!"".equals(annotation.mockEndpoint()))
@@ -65,7 +68,9 @@ public class CamelZeebeRule extends ZeebeTestRule
                 before();
                 try
                 {
-                    camelContext.addRoutes(routeBuilder);
+                    for (RouteBuilder r : routeBuilderFromAnnotation(annotation, description, test)) {
+                        camelContext.addRoutes(r);
+                    }
                     camelContext.start();
 
                     base.evaluate();
@@ -76,6 +81,32 @@ public class CamelZeebeRule extends ZeebeTestRule
                 }
             }
         };
+    }
+
+    static List<RouteBuilder> routeBuilderFromAnnotation(CamelZeebeTest annotation, Description description, Object test) {
+        List<RouteBuilder> rbs = new ArrayList<>();
+        if (!"".equals(annotation.routeBuilder())) {
+            rbs.add(routeBuilderFromField(annotation.routeBuilder(), description.getTestClass(), test));
+        }
+        if (!"".equals(annotation.routeBuilderSupplier())) {
+            rbs.add(routeBuilderFromMethod(annotation.routeBuilderSupplier(), description.getTestClass(), test));
+        }
+
+        return rbs;
+    }
+
+    @SneakyThrows
+    static RouteBuilder routeBuilderFromMethod(String methodName, Class<?> testClass, Object testInstance) {
+        Method method = testClass.getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        return (RouteBuilder) method.invoke(testInstance);
+    }
+
+    @SneakyThrows
+    static RouteBuilder routeBuilderFromField(String fieldName, Class<?> testClass, Object testInstance) {
+        Field field = testClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (RouteBuilder) field.get(testInstance);
     }
 
     @Override
@@ -142,4 +173,6 @@ public class CamelZeebeRule extends ZeebeTestRule
     {
         return componentClass;
     }
+
+
 }

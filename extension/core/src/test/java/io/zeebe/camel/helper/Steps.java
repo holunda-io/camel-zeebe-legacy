@@ -7,6 +7,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 
+@Deprecated
 public class Steps
 {
 
