@@ -2,24 +2,30 @@ package io.zeebe.camel.handler.task;
 
 import java.time.Duration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.camel.ZeebeConsumer;
-import io.zeebe.camel.api.event.EventHeader;
-import io.zeebe.camel.fn.CreateEventHeader;
+import io.zeebe.camel.processor.TaskEventToJsonProcessor;
 import io.zeebe.client.TasksClient;
+import io.zeebe.client.event.TaskEvent;
 import io.zeebe.client.task.TaskHandler;
 import io.zeebe.client.task.TaskSubscription;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
+/**
+ * Consumer that subscribes a worker identified by {@link TaskUri#lockOwner(String)} to the given topic
+ * and taskType.
+ * <p>
+ * {@link io.zeebe.client.event.TaskEvent}s that are received from zeebe are transformed to json and forwarded to
+ * the next processor in route.
+ */
 @Slf4j
 public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler, TaskSubscription>
 {
-
     private final TasksClient client;
     private final String topic;
-    private final CreateEventHeader createEventHeader = new CreateEventHeader();
+    private final TaskEventToJsonProcessor taskEventToJsonProcessor = new TaskEventToJsonProcessor();
 
     public TaskCreateConsumer(final TaskEndpoint endpoint, Processor processor)
     {
@@ -32,26 +38,17 @@ public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler,
     @Override
     protected TaskHandler createHandler()
     {
-        return (client, task) -> {
-            try
+        return new TaskHandler()
+        {
+            @Override
+            @SneakyThrows
+            public void handle(TasksClient client, TaskEvent task)
             {
-                EventHeader header = createEventHeader.apply(task.getMetadata(), task.getState());
-                ObjectMapper mapper = new ObjectMapper();
-
-                String body = mapper.writeValueAsString(task);
-                String p = task.getPayload();
-                log.error("payload: {}", p);
-
                 final Exchange exchange = endpoint.createExchange();
-                exchange.getIn().setHeaders(header.toMap());
-                exchange.getIn().setBody(body);
+                exchange.getIn().setBody(task);
+                taskEventToJsonProcessor.process(exchange);
 
                 getProcessor().process(exchange);
-            }
-            catch (Exception e)
-            {
-                // TODO: we have to correctly handle this, exception not allowed in lamdba and completion handled by producer
-                throw new RuntimeException("task handling failed", e);
             }
         };
     }

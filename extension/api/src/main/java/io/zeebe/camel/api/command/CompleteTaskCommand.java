@@ -14,12 +14,12 @@ public class CompleteTaskCommand implements TaskCommand
     /**
      * Task event as a basis for this command.
      */
-    private TaskEvent task;
+    private final TaskEvent task;
 
     /**
      * Command payload. May be null.
      */
-    private String payload;
+    private final String payload;
 
     /**
      * Determines if the payload exists.
@@ -27,5 +27,11 @@ public class CompleteTaskCommand implements TaskCommand
      */
     public boolean hasPayload() {
         return payload != null;
+    }
+
+    @Override
+    public CommandType getCommandType()
+    {
+        return CommandType.COMPLETE;
     }
 }

@@ -12,22 +12,22 @@ public class DummyComponentWithRuleTest
     @Rule
     public final CamelZeebeRule runner = new CamelZeebeRule(this, new DefaultCamelContext(), "io.zeebe.camel.test.DummyComponent");
 
+    private final RouteBuilder routeBuilder = new RouteBuilder()
+    {
+        @Override
+        public void configure() throws Exception
+        {
+            from("direct:foo").to("log:test");
+        }
+    };
 
     @Test
     @CamelZeebeTest(routeBuilder = "routeBuilder")
-    public void name() {
+    public void name()
+    {
 
         log.warn("calling name!");
 
-
     }
 
-    private RouteBuilder routeBuilder() {
-        return new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from("direct:foo").to("log:test");
-            }
-        };
-    }
 }

@@ -1,9 +1,7 @@
 package io.zeebe.camel;
 
-import static io.zeebe.camel.ZeebeComponent.DEFAULT_TOPIC;
-
 import io.zeebe.camel.fn.ClientSupplier;
-import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.impl.ZeebeClientImpl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +50,7 @@ public abstract class ZeebeEndpoint extends DefaultEndpoint implements ClientSup
     }
 
     @Override
-    public ZeebeClient getClient()
+    public ZeebeClientImpl getClient()
     {
         return configuration.getComponent().getClient();
     }

@@ -1,5 +1,6 @@
 package io.zeebe.camel.api.command;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.zeebe.camel.api.event.TaskEvent;
 
 /**
@@ -7,9 +8,13 @@ import io.zeebe.camel.api.event.TaskEvent;
  */
 public interface TaskCommand
 {
+
     /**
      * Retrieves the event for this task command.
      * @return task event.
      */
     TaskEvent getTask();
+
+
+    CommandType getCommandType();
 }

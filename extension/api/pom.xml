@@ -11,4 +11,46 @@
 
   <artifactId>camel-zeebe-api</artifactId>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jackson</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TEST -->
+    <dependency>
+      <groupId>io.zeebe.camel</groupId>
+      <artifactId>camel-zeebe-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <!-- use version 2.1.0 or higher -->
+      <version>2.1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
+        <version>2.1.0</version>
+        <configuration>
+          <classes>
+            <param>io.zeebe.camel.api.event.TaskEvent</param>
+          </classes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

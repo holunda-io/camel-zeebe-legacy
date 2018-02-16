@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.event.WorkflowInstanceEvent;
+import io.zeebe.test.TopicEventRecorder;
 import io.zeebe.test.ZeebeTestRule;
 import lombok.SneakyThrows;
 import org.apache.camel.CamelContext;
@@ -145,6 +146,7 @@ public class CamelZeebeRule extends ZeebeTestRule
     public void startProcess(String processKey, String payload)
     {
 
+
         final WorkflowInstanceEvent workflowInstance = getClient().workflows()
                                                                   .create(getDefaultTopic())
                                                                   .bpmnProcessId(processKey)
@@ -174,5 +176,12 @@ public class CamelZeebeRule extends ZeebeTestRule
         return componentClass;
     }
 
+    @SneakyThrows
+    public TopicEventRecorder getTopicEventRecorder() {
+        Field field = ZeebeTestRule.class.getDeclaredField("topicEventRecorder");
+        field.setAccessible(true);
+
+        return (TopicEventRecorder) field.get(this);
+    }
 
 }

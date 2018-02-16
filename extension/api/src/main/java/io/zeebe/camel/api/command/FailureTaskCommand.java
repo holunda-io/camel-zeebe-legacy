@@ -15,4 +15,10 @@ public class FailureTaskCommand implements TaskCommand
      * Task event as a basis for this command.
      */
     private TaskEvent task;
+
+    @Override
+    public CommandType getCommandType()
+    {
+        return CommandType.FAIL;
+    }
 }

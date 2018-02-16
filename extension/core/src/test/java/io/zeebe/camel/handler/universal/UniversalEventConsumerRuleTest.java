@@ -18,7 +18,9 @@ public class UniversalEventConsumerRuleTest
         @Override
         public void configure()
         {
-            from(UniversalEventUri.topic(zeebe.getDefaultTopic()).get()).to("log:message?showHeaders=true").to("mock:receive");
+            from(UniversalEventUri.topic(zeebe.getDefaultTopic()).get())
+                .to("log:message?showHeaders=true&multiline=true")
+                .to("mock:receive");
         }
     };
 
@@ -27,7 +29,7 @@ public class UniversalEventConsumerRuleTest
     public void subscribe_and_consume_generalEvents() throws Exception
     {
         // expect two messages (create/created)
-        zeebe.mockEndpoint().expectedMessageCount(2);
+        zeebe.mockEndpoint().expectedMessageCount(1);
         zeebe.mockEndpoint().expectedHeaderReceived("type", "WORKFLOW");
         zeebe.mockEndpoint().expectedHeaderValuesReceivedInAnyOrder("state", "CREATE", "CREATED");
 

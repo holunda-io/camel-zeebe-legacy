@@ -1,8 +1,8 @@
 package io.zeebe.camel.fn;
 
-import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.impl.ZeebeClientImpl;
 
 public interface ClientSupplier
 {
-    ZeebeClient getClient();
+    ZeebeClientImpl getClient();
 }

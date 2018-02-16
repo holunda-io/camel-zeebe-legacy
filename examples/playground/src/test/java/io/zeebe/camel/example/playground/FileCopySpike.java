@@ -42,6 +42,7 @@ public class FileCopySpike
         Thread.sleep(1000);
         }
 
+        Thread.sleep(10000);
         context.stop();
 
         Stream.of(folder2.getRoot().listFiles()).map(File::getAbsolutePath).forEach(System.out::println);

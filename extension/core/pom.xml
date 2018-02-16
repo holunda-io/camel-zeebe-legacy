@@ -26,6 +26,11 @@
 
 
     <dependency>
+      <groupId>org.immutables</groupId>
+      <artifactId>value</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>io.zeebe.camel</groupId>
       <artifactId>camel-zeebe-api</artifactId>
     </dependency>

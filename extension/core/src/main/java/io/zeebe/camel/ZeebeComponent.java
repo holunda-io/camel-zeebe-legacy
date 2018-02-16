@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import io.zeebe.camel.fn.ClientSupplier;
 import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.impl.ZeebeClientImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
@@ -67,8 +68,8 @@ public class ZeebeComponent extends DefaultComponent implements ClientSupplier
     }
 
     @Override
-    public ZeebeClient getClient()
+    public ZeebeClientImpl getClient()
     {
-        return client.get();
+        return (ZeebeClientImpl) client.get();
     }
 }

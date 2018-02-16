@@ -2,6 +2,10 @@ package io.zeebe.camel.api.event;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 
@@ -9,13 +13,10 @@ import lombok.Value;
 @Builder
 public class TaskEvent implements ZeebeEvent
 {
+    public static final String PAYLOAD = "payloadSource";
 
-    /**
-     * The events metadata, such as its key or the topic and partition it belongs to
-     */
-    private final EventHeader metadata;
-
-
+    @JsonIgnore
+    private final MessageHeader metadata;
 
     /**
      * The name of the state in the event's lifecycle. The lifecycle is different for each type of event.
@@ -58,5 +59,9 @@ public class TaskEvent implements ZeebeEvent
     /**
      * JSON-formatted payload.
      */
-    private final String getPayload;
+    @JsonProperty(PAYLOAD)
+    private final String payload;
+
+    @JsonProperty("payload")
+    private final String payloadPck;
 }

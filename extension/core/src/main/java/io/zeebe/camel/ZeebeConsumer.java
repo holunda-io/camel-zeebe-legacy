@@ -2,10 +2,11 @@ package io.zeebe.camel;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.camel.fn.ClientSupplier;
 import io.zeebe.camel.fn.CreateExchangeForEvent;
 import io.zeebe.camel.fn.SubscriptionAdapter;
-import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.impl.ZeebeClientImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
@@ -25,12 +26,14 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends De
     protected final CreateExchangeForEvent createExchangeForEvent;
 
     protected SubscriptionAdapter subscriptionAdapter;
+    protected final ObjectMapper mapper;
 
     public ZeebeConsumer(final ZE endpoint, final Processor processor)
     {
         super(endpoint, processor);
         this.endpoint = endpoint;
         this.createExchangeForEvent = new CreateExchangeForEvent(() -> endpoint.createExchange());
+        this.mapper= endpoint.getClient().getObjectMapper();
     }
 
     protected abstract EH createHandler();
@@ -53,7 +56,7 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends De
     }
 
     @Override
-    public ZeebeClient getClient()
+    public ZeebeClientImpl getClient()
     {
         return endpoint.getClient();
     }

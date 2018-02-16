@@ -13,7 +13,7 @@ public class GeneralEvent implements ZeebeEvent
     /**
      * The events metadata, such as its key or the topic and partition it belongs to
      */
-    private final EventHeader metadata;
+    private final MessageHeader metadata;
 
     /**
      * The name of the state in the event's lifecycle. The lifecycle is different for each type of event.

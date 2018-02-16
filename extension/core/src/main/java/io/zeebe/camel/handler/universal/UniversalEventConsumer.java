@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zeebe.camel.ZeebeConsumer;
-import io.zeebe.camel.api.event.EventHeader;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.event.TopicSubscription;
 import io.zeebe.client.event.UniversalEventHandler;
@@ -41,7 +40,6 @@ public class UniversalEventConsumer extends ZeebeConsumer<UniversalEventEndpoint
             final Exchange exchange = endpoint.createExchange();
 
             String json = e.getJson();
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(json);
             String state = node.at("/state").asText();
 
