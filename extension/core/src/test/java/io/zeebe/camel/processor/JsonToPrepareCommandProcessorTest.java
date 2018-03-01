@@ -6,9 +6,10 @@ import java.util.stream.Stream;
 
 import io.zeebe.camel.api.command.CommandType;
 import io.zeebe.camel.processor.JsonToPrepareCommandProcessor.PrepareCommand;
-import io.zeebe.camel.test.json.ZeebeObjectMapper;
+
 import io.zeebe.client.event.EventMetadata;
 import io.zeebe.client.event.TopicEventType;
+import io.zeebe.client.impl.ZeebeObjectMapper;
 import org.apache.camel.test.junit4.ExchangeTestSupport;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class JsonToPrepareCommandProcessorTest extends ExchangeTestSupport
             ",")).map(String::trim).map(s -> s.split("=")).collect(Collectors.toMap(p -> p[0], p -> p[1]));
     private static final String completeCommand = "{\"task\":{\"state\":\"LOCKED\",\"type\":\"doSomething\",\"headers\":{\"activityId\":\"task_doSomething\",\"workflowKey\":4294975304,\"workflowInstanceKey\":4294975520,\"bpmnProcessId\":\"process_dummy\",\"activityInstanceKey\":4294976512,\"workflowDefinitionVersion\":1},\"customHeaders\":{},\"lockOwner\":\"test\",\"retries\":3,\"lockTime\":1518768987210,\"payloadSource\":\"{\\\"bar\\\":\\\"hello\\\"}\",\"payload\":\"gaNiYXKlaGVsbG8=\"},\"payload\":\"\\\"bar\\\":\\\"world\\\"\",\"commandType\":\"COMPLETE\"}";
 
-    private final JsonToPrepareCommandProcessor processor = new JsonToPrepareCommandProcessor(ZeebeObjectMapper.INSTANCE);
+    private final JsonToPrepareCommandProcessor processor = new JsonToPrepareCommandProcessor(new ZeebeObjectMapper());
 
     @Test
     public void prepare_command_with_task() throws Exception
@@ -57,6 +58,5 @@ public class JsonToPrepareCommandProcessorTest extends ExchangeTestSupport
         Assertions.assertThat(metadata.getPartitionId()).isEqualTo(1);
         Assertions.assertThat(metadata.getTopicName()).isEqualTo("default-topic");
         Assertions.assertThat(metadata.getType()).isEqualTo(TopicEventType.TASK);
-
     }
 }

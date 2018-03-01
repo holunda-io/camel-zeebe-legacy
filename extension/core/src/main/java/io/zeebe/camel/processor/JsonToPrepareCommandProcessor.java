@@ -1,22 +1,19 @@
 package io.zeebe.camel.processor;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.camel.api.command.CommandType;
 import io.zeebe.camel.api.event.MessageHeader;
 import io.zeebe.client.event.impl.TaskEventImpl;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 
+@RequiredArgsConstructor
 public class JsonToPrepareCommandProcessor implements Processor
 {
-    public JsonToPrepareCommandProcessor(ObjectMapper mapper)
-    {
-        this.mapper = mapper;
-    }
+    private final ObjectMapper mapper;
 
     @Data
     public static class PrepareCommand
@@ -24,10 +21,7 @@ public class JsonToPrepareCommandProcessor implements Processor
         private TaskEventImpl task;
         private String payload;
         private CommandType commandType;
-
     }
-
-    private final ObjectMapper mapper;
 
     @Override
     public void process(final Exchange exchange) throws Exception

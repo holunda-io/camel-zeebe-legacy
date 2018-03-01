@@ -9,7 +9,7 @@ public class CamelZeebeUriTest
 
     static class TestUri extends CamelZeebeUri<TestUri> {
 
-        public TestUri(String base, String foo, String zee)
+        public TestUri(final String base, final String foo, final String zee)
         {
             super(base);
             parameter("foo",foo);

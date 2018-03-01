@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.zeebe.camel</groupId>
@@ -28,7 +29,7 @@
     <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
     <camel.version>2.20.2</camel.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <zeebe.version>0.7.0</zeebe.version>
+    <zeebe.version>0.8.0-SNAPSHOT</zeebe.version>
     <lombok.version>1.16.18</lombok.version>
     <immutables.version>2.5.5</immutables.version>
   </properties>
@@ -104,4 +105,19 @@
   <build>
     <defaultGoal>clean install</defaultGoal>
   </build>
+
+  <repositories>
+    <repository>
+      <id>zeebe-snapshots</id>
+      <name>Zeebe Snapshot Repository</name>
+      <url>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
 </project>
