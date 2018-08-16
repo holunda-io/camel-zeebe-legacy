@@ -1,18 +1,18 @@
 package io.zeebe.camel.api.command;
 
-import io.zeebe.camel.api.event.TaskEvent;
+import io.zeebe.camel.api.event.JobEvent;
 
 /**
  * Task command.
  */
-public interface TaskCommand {
+public interface JobCommand {
 
     /**
-     * Retrieves the event for this task command.
+     * Retrieves the event for this job command.
      *
-     * @return task event.
+     * @return job event.
      */
-    TaskEvent getTask();
+    JobEvent getJobEvent();
 
 
     CommandType getCommandType();

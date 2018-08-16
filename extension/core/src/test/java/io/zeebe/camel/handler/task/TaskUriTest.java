@@ -4,13 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class TaskUriTest
-{
+public class TaskUriTest {
 
     @Test
-    public void create()
-    {
+    public void create() {
         assertThat(TaskUri.topic("topic").type("type").lockOwner("owner").get())
-            .isEqualTo("zeebe://topic/task/type?owner=owner");
+            .isEqualTo("zeebe://topic/job/type?owner=owner");
     }
 }

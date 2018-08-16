@@ -10,5 +10,6 @@
   </parent>
 
   <artifactId>camel-zeebe-spring</artifactId>
+  <name>lib/camel-zeebe-spring</name>
 
 </project>

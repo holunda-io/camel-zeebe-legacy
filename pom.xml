@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.camunda</groupId>
+    <artifactId>camunda-release-parent</artifactId>
+    <version>2.5</version>
+    <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
+    <relativePath/>
+  </parent>
 
   <groupId>io.zeebe.camel</groupId>
   <artifactId>camel-zeebe-root</artifactId>
+  <name>pom/camel-zeebe</name>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -19,19 +29,20 @@
   </modules>
 
   <properties>
-    <java.version>1.8</java.version>
+    <version.java>1.8</version.java>
+    <java.version>${version.java}</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
-    <camel.version>2.20.2</camel.version>
+    <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
+    <camel.version>2.22.0</camel.version>
+    <zeebe.version>0.11.0</zeebe.version>
+    <lombok.version>1.18.2</lombok.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <zeebe.version>0.8.0-SNAPSHOT</zeebe.version>
-    <lombok.version>1.16.18</lombok.version>
-    <immutables.version>2.5.5</immutables.version>
+    <immutables.version>2.6.3</immutables.version>
   </properties>
 
   <dependencyManagement>

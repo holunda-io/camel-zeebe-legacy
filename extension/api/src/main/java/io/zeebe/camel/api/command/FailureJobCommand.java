@@ -1,20 +1,21 @@
 package io.zeebe.camel.api.command;
 
-import io.zeebe.camel.api.event.TaskEvent;
+import io.zeebe.camel.api.event.JobEvent;
 import lombok.Builder;
 import lombok.Value;
 
 /**
- * Command indicating failure by processing of the task.
+ * Command indicating failure by processing of the job.
  */
 @Value
 @Builder
-public class FailureTaskCommand implements TaskCommand {
+public class FailureJobCommand implements JobCommand {
 
     /**
      * Task event as a basis for this command.
      */
-    private TaskEvent task;
+    private JobEvent jobEvent;
+
 
     @Override
     public CommandType getCommandType() {

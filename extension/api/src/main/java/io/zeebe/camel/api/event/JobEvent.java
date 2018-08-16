@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class TaskEvent implements ZeebeEvent {
+public class JobEvent implements ZeebeEvent {
 
     public static final String PAYLOAD = "payloadSource";
 
@@ -22,19 +22,19 @@ public class TaskEvent implements ZeebeEvent {
     private final String state;
 
     /**
-     * The task's type.
+     * The job's type.
      */
     private final String type;
 
     /**
-     * Broker-defined headers associated with this task. For example, if this task is created in the
+     * Broker-defined headers associated with this job. For example, if this job is created in the
      * context of workflow instance, the header provide context information on which activity is
      * executed, etc.
      */
     private final Map<String, Object> headers;
 
     /**
-     * User-defined headers associated with this task.
+     * User-defined headers associated with this job.
      */
     private final Map<String, Object> customHeaders;
 
@@ -49,7 +49,7 @@ public class TaskEvent implements ZeebeEvent {
     private final Integer retries;
 
     /**
-     * The time until when the task is locked and can be exclusively processed by this client.
+     * The time until when the job is locked and can be exclusively processed by this client.
      */
     private final long lockTime;
 

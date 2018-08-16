@@ -1,20 +1,20 @@
 package io.zeebe.camel.api.command;
 
-import io.zeebe.camel.api.event.TaskEvent;
+import io.zeebe.camel.api.event.JobEvent;
 import lombok.Builder;
 import lombok.Value;
 
 /**
- * Command for completing the task.
+ * Command for completing the jobEvent.
  */
 @Value
 @Builder
-public class CompleteTaskCommand implements TaskCommand {
+public class CompleteJobCommand implements JobCommand {
 
     /**
      * Task event as a basis for this command.
      */
-    private final TaskEvent task;
+    private final JobEvent jobEvent;
 
     /**
      * Command payload. May be null.

@@ -8,16 +8,14 @@ import org.apache.camel.builder.RouteBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class UniversalEventConsumerRuleTest
-{
+public class UniversalEventConsumerRuleTest {
+
     @Rule
     public final CamelZeebeRule zeebe = new CamelZeebeRule(this);
 
-    private final RouteBuilder route = new RouteBuilder()
-    {
+    private final RouteBuilder route = new RouteBuilder() {
         @Override
-        public void configure()
-        {
+        public void configure() {
             from(UniversalEventUri.topic(zeebe.getDefaultTopic()).get())
                 .to("log:message?showHeaders=true&multiline=true")
                 .to("mock:receive");
@@ -26,8 +24,7 @@ public class UniversalEventConsumerRuleTest
 
     @Test
     @CamelZeebeTest(routeBuilder = "route", mockEndpoint = "mock:receive")
-    public void subscribe_and_consume_generalEvents() throws Exception
-    {
+    public void subscribe_and_consume_generalEvents() throws Exception {
         // expect two messages (create/created)
         zeebe.mockEndpoint().expectedMessageCount(1);
         zeebe.mockEndpoint().expectedHeaderReceived("type", "WORKFLOW");

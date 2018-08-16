@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>camel-zeebe-test</artifactId>
+  <name>test/camel-zeebe-test</name>
   <description>providing zeebe and camel test tools</description>
 
   <properties>

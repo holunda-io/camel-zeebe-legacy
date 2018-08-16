@@ -1,29 +1,23 @@
 package io.zeebe.camel.test;
 
+import io.zeebe.client.ZeebeClient;
+import io.zeebe.test.TopicEventRecorder;
+import io.zeebe.test.ZeebeTestRule;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.event.WorkflowInstanceEvent;
-import io.zeebe.test.TopicEventRecorder;
-import io.zeebe.test.ZeebeTestRule;
 import lombok.SneakyThrows;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
-import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-public class CamelZeebeRule extends ZeebeTestRule
-{
+public class CamelZeebeRule extends ZeebeTestRule {
 
     private final Object test;
     private final Class<? extends Component> componentClass;
@@ -32,14 +26,12 @@ public class CamelZeebeRule extends ZeebeTestRule
 
     private MockEndpoint mockEndpoint;
 
-    public CamelZeebeRule(final Object test)
-    {
+    public CamelZeebeRule(final Object test) {
         this(test, new DefaultCamelContext(), "io.zeebe.camel.ZeebeComponent");
     }
 
     @SneakyThrows
-    public CamelZeebeRule(final Object test, CamelContext camelContext, final String componentFQN)
-    {
+    public CamelZeebeRule(final Object test, CamelContext camelContext, final String componentFQN) {
         this.test = test;
 
         this.componentClass = (Class<? extends Component>) Class.forName(componentFQN);
@@ -50,69 +42,65 @@ public class CamelZeebeRule extends ZeebeTestRule
 
     @Override
     @SneakyThrows
-    public Statement apply(final Statement base, final Description description)
-    {
+    public Statement apply(final Statement base, final Description description) {
         final CamelZeebeTest annotation = description.getAnnotation(CamelZeebeTest.class);
 
-
-
-        if (!"".equals(annotation.mockEndpoint()))
-        {
+        if (!"".equals(annotation.mockEndpoint())) {
             mockEndpoint = camelContext.getEndpoint(annotation.mockEndpoint(), MockEndpoint.class);
         }
 
-        return new Statement()
-        {
+        return new Statement() {
             @Override
-            public void evaluate() throws Throwable
-            {
+            public void evaluate() throws Throwable {
                 before();
-                try
-                {
-                    for (RouteBuilder r : routeBuilderFromAnnotation(annotation, description, test)) {
+                try {
+                    for (RouteBuilder r : routeBuilderFromAnnotation(annotation, description,
+                        test)) {
                         camelContext.addRoutes(r);
                     }
                     camelContext.start();
 
                     base.evaluate();
-                }
-                finally
-                {
+                } finally {
                     after();
                 }
             }
         };
     }
 
-    static List<RouteBuilder> routeBuilderFromAnnotation(CamelZeebeTest annotation, Description description, Object test) {
+    static List<RouteBuilder> routeBuilderFromAnnotation(CamelZeebeTest annotation,
+        Description description, Object test) {
         List<RouteBuilder> rbs = new ArrayList<>();
         if (!"".equals(annotation.routeBuilder())) {
-            rbs.add(routeBuilderFromField(annotation.routeBuilder(), description.getTestClass(), test));
+            rbs.add(
+                routeBuilderFromField(annotation.routeBuilder(), description.getTestClass(), test));
         }
         if (!"".equals(annotation.routeBuilderSupplier())) {
-            rbs.add(routeBuilderFromMethod(annotation.routeBuilderSupplier(), description.getTestClass(), test));
+            rbs.add(routeBuilderFromMethod(annotation.routeBuilderSupplier(),
+                description.getTestClass(), test));
         }
 
         return rbs;
     }
 
     @SneakyThrows
-    static RouteBuilder routeBuilderFromMethod(String methodName, Class<?> testClass, Object testInstance) {
+    static RouteBuilder routeBuilderFromMethod(String methodName, Class<?> testClass,
+        Object testInstance) {
         Method method = testClass.getDeclaredMethod(methodName);
         method.setAccessible(true);
         return (RouteBuilder) method.invoke(testInstance);
     }
 
     @SneakyThrows
-    static RouteBuilder routeBuilderFromField(String fieldName, Class<?> testClass, Object testInstance) {
+    static RouteBuilder routeBuilderFromField(String fieldName, Class<?> testClass,
+        Object testInstance) {
         Field field = testClass.getDeclaredField(fieldName);
         field.setAccessible(true);
         return (RouteBuilder) field.get(testInstance);
     }
 
     @Override
-    protected void before()
-    {
+    protected void before() {
         super.before();
 
         registerComponent();
@@ -120,59 +108,56 @@ public class CamelZeebeRule extends ZeebeTestRule
     }
 
     @Override
-    protected void after()
-    {
+    protected void after() {
         super.after();
-        try
-        {
+        try {
             camelContext.stop();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public CamelContext getCamelContext()
-    {
+    public CamelContext getCamelContext() {
         return camelContext;
     }
 
-    public void deploy(String process)
-    {
-        getClient().workflows().deploy(getDefaultTopic()).addResourceFromClasspath(process).execute();
+    public void deploy(String process) {
+        getClient()
+            .topicClient(getDefaultTopic())
+            .workflowClient()
+            .newDeployCommand()
+            .addResourceFromClasspath(process)
+            .send()
+            .join();
     }
 
-    public void startProcess(String processKey, String payload)
-    {
-
-
-        final WorkflowInstanceEvent workflowInstance = getClient().workflows()
-                                                                  .create(getDefaultTopic())
-                                                                  .bpmnProcessId(processKey)
-                                                                  .payload(payload)
-                                                                  .latestVersion()
-                                                                  .execute();
-
+    public void startProcess(String processKey, String payload) {
+        getClient()
+            .topicClient()
+            .workflowClient()
+            .newCreateInstanceCommand()
+            .bpmnProcessId(processKey)
+            .latestVersion()
+            .payload(payload)
+            .send()
+            .join();
     }
 
-    public MockEndpoint mockEndpoint()
-    {
+    public MockEndpoint mockEndpoint() {
         return mockEndpoint;
     }
 
     @SneakyThrows
-    Component registerComponent()
-    {
+    Component registerComponent() {
         String scheme = (String) componentClass.getDeclaredField("SCHEME").get(null);
-        Component component = componentClass.getConstructor(Supplier.class).newInstance(clientSupplier);
+        Component component = componentClass.getConstructor(Supplier.class)
+            .newInstance(clientSupplier);
         camelContext.addComponent(scheme, component);
 
         return component;
     }
 
-    Class<? extends Component> getComponentClass()
-    {
+    Class<? extends Component> getComponentClass() {
         return componentClass;
     }
 

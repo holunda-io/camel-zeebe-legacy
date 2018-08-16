@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Slf4j
-public class TaskHandlerTest {
+public class JobHandlerTest {
 
     private static final String LOG_MESSAGE = "log:message?showHeaders=true&multiline=true";
 
@@ -64,7 +64,7 @@ public class TaskHandlerTest {
             // worker receives, works on job and sends complete command
             from("direct:notifyExternalWorker").process(
                 TaskWorkerProcessor.processor(
-                    task -> CompleteJobCommand.builder().task(task).payload("\"bar\":\"world\"")
+                    task -> CompleteJobCommand.builder().jobEvent(task).payload("\"bar\":\"world\"")
                         .build()))
                 .to("direct:completeTask");
 
