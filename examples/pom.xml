@@ -10,6 +10,7 @@
 
   <groupId>io.zeebe.camel.example</groupId>
   <artifactId>camel-zeebe-example-root</artifactId>
+  <name>pom/camel-zeebe-examples</name>
   <packaging>pom</packaging>
 
   <properties>

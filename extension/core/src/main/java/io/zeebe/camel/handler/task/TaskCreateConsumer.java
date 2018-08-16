@@ -1,51 +1,45 @@
 package io.zeebe.camel.handler.task;
 
-import java.time.Duration;
-
+import io.zeebe.broker.job.processor.JobSubscription;
 import io.zeebe.camel.ZeebeConsumer;
 import io.zeebe.camel.processor.TaskEventToJsonProcessor;
-import io.zeebe.client.TasksClient;
-import io.zeebe.client.event.TaskEvent;
-import io.zeebe.client.task.TaskHandler;
-import io.zeebe.client.task.TaskSubscription;
+import io.zeebe.client.api.clients.JobClient;
+import io.zeebe.client.api.subscription.JobHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 /**
- * Consumer that subscribes a worker identified by {@link TaskUri#lockOwner(String)} to the given topic
- * and taskType.
+ * Consumer that subscribes a worker identified by {@link TaskUri#lockOwner(String)} to the given
+ * topic and taskType.
  * <p>
- * {@link io.zeebe.client.event.TaskEvent}s that are received from zeebe are transformed to json and forwarded to
- * the next processor in route.
+ * {@link io.zeebe.camel.api.event.JobEvent}s that are received from zeebe are transformed to json and
+ * forwarded to the next processor in route.
  */
 @Slf4j
-public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler, TaskSubscription>
-{
-    private final TasksClient client;
+public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, JobHandler, JobSubscription> {
+
+    private final JobClient client;
     private final String topic;
     private final TaskEventToJsonProcessor taskEventToJsonProcessor = new TaskEventToJsonProcessor();
 
-    public TaskCreateConsumer(final TaskEndpoint endpoint, Processor processor)
-    {
+    public TaskCreateConsumer(final TaskEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
 
-        this.client = endpoint.getClient().tasks();
-        this.topic = endpoint.getTopic();
+        this.client = null;// FIXME: implement endpoint.getClient().;
+        this.topic = null; // FIXME: implementendpoint.getTopic();
     }
 
     @Override
-    protected TaskHandler createHandler()
-    {
-        return new TaskHandler()
-        {
-            @Override
+    protected JobHandler createHandler() {
+        return new JobHandler() {
             @SneakyThrows
-            public void handle(TasksClient client, TaskEvent task)
-            {
+            @Override
+            public void handle(JobClient client, io.zeebe.client.api.events.JobEvent jobEvent) {
+
                 final Exchange exchange = endpoint.createExchange();
-                exchange.getIn().setBody(task);
+                exchange.getIn().setBody(jobEvent);
                 taskEventToJsonProcessor.process(exchange);
 
                 getProcessor().process(exchange);
@@ -54,13 +48,14 @@ public class TaskCreateConsumer extends ZeebeConsumer<TaskEndpoint, TaskHandler,
     }
 
     @Override
-    protected TaskSubscription createSubscription(TaskHandler handler)
-    {
-        return client.newTaskSubscription(topic)
-                     .taskType(endpoint.getType())
-                     .lockOwner(endpoint.getOwner())
-                     .lockTime(Duration.ofSeconds(10))
-                     .handler(createHandler())
-                     .open();
+    protected JobSubscription createSubscription(JobHandler handler) {
+        return null;
+        // FIXME: implement
+//        client.newWorker().jobType()newTaskSubscription(topic)
+//            .taskType(endpoint.getType())
+//            .lockOwner(endpoint.getOwner())
+//            .lockTime(Duration.ofSeconds(10))
+//            .handler(createHandler())
+//            .open();
     }
 }

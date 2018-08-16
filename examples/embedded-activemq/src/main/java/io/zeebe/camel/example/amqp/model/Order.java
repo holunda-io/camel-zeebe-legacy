@@ -2,7 +2,6 @@ package io.zeebe.camel.example.amqp.model;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -2,7 +2,6 @@ package io.zeebe.camel.example.playground;
 
 import java.util.Date;
 import java.util.Objects;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleSpike {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSpike.class);
 
     public static void main(String[] args) throws Exception {
@@ -20,30 +20,31 @@ public class SimpleSpike {
     }
 
     private static class MyRouteBuilder extends RouteBuilder {
+
         @Override
         public void configure() throws Exception {
             from("timer:simple?period=503")
-                    .id("simple-route")
-                    .transform()
-                    .exchange(this::dateToTime)
-                    .process()
-                    .message(this::log)
-                    .process()
-                    .body(this::log)
-                    .choice()
-                    .when()
-                    .body(Integer.class, b -> (b & 1) == 0)
-                    .log("Received even number")
-                    .when()
-                    .body(Integer.class, (b, h) -> h.containsKey("skip") ? false : (b & 1) == 0)
-                    .log("Received odd number")
-                    .when()
-                    .body(Objects::isNull)
-                    .log("Received null body")
-                    .when()
-                    .body(Integer.class, b -> (b & 1) != 0)
-                    .log("Received odd number")
-                    .endChoice();
+                .id("simple-route")
+                .transform()
+                .exchange(this::dateToTime)
+                .process()
+                .message(this::log)
+                .process()
+                .body(this::log)
+                .choice()
+                .when()
+                .body(Integer.class, b -> (b & 1) == 0)
+                .log("Received even number")
+                .when()
+                .body(Integer.class, (b, h) -> h.containsKey("skip") ? false : (b & 1) == 0)
+                .log("Received odd number")
+                .when()
+                .body(Objects::isNull)
+                .log("Received null body")
+                .when()
+                .body(Integer.class, b -> (b & 1) != 0)
+                .log("Received odd number")
+                .endChoice();
         }
 
         private Long dateToTime(Exchange e) {

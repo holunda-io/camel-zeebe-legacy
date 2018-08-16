@@ -1,7 +1,6 @@
 package io.zeebe.camel;
 
-public enum TestConstants
-{
+public enum TestConstants {
     ;
 
     public static final String DUMMY_BPMN = "dummy.bpmn";

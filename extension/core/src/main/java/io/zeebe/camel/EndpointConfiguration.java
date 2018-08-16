@@ -1,15 +1,16 @@
 package io.zeebe.camel;
 
-import java.util.*;
-
 import io.zeebe.camel.handler.Handler;
 import io.zeebe.camel.handler.universal.UniversalEventEndpoint;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.ToString;
 
 @ToString
-public class EndpointConfiguration
-{
+public class EndpointConfiguration {
 
     private static final String TOPIC = "topic";
     private static final String SUBJECT = "subject";
@@ -29,8 +30,7 @@ public class EndpointConfiguration
         private final Optional<String> subject;
         private final Optional<String> type;
 
-        private Remaining(final String remaining)
-        {
+        private Remaining(final String remaining) {
             if (remaining == null || "".equals(remaining.trim())) {
                 throw new IllegalArgumentException("Remaining must not be null or blank.");
             }
@@ -47,7 +47,7 @@ public class EndpointConfiguration
     private final String uri;
 
     @Getter
-    private final Map<String,Object> parameters = new HashMap<>();
+    private final Map<String, Object> parameters = new HashMap<>();
 
     @Getter
     private final ZeebeComponent component;
@@ -58,12 +58,14 @@ public class EndpointConfiguration
     private final Remaining remaining;
 
 
-    public EndpointConfiguration(final String uri, final String remaining, final Map<String, Object> parameters, final ZeebeComponent component)
-    {
+    public EndpointConfiguration(final String uri, final String remaining,
+        final Map<String, Object> parameters, final ZeebeComponent component) {
         this.uri = uri;
         this.remaining = remaining(remaining);
 
-        handler = Objects.requireNonNull(Handler.BY_SUBJECT.get(getSubject()), String.format("Unsupported syntax: '%s', use one of %s", getSubject(), Handler.BY_SUBJECT.keySet()));
+        handler = Objects.requireNonNull(Handler.BY_SUBJECT.get(getSubject()), String
+            .format("Unsupported syntax: '%s', use one of %s", getSubject(),
+                Handler.BY_SUBJECT.keySet()));
 
         this.parameters.putAll(parameters);
         this.parameters.put(TOPIC, this.remaining.topic);
@@ -81,8 +83,7 @@ public class EndpointConfiguration
         return remaining.subject.orElse(UniversalEventEndpoint.SUBJECT);
     }
 
-    public ZeebeEndpoint createEndpoint()
-    {
+    public ZeebeEndpoint createEndpoint() {
         return getHandler().createEndpoint(this);
     }
 }

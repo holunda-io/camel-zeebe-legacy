@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>camel-zeebe-api</artifactId>
+  <name>lib/camel-zeebe-api</name>
 
   <dependencies>
     <dependency>
@@ -47,7 +48,7 @@
         <version>2.1.0</version>
         <configuration>
           <classes>
-            <param>io.zeebe.camel.api.event.TaskEvent</param>
+            <param>io.zeebe.camel.api.event.JobEvent</param>
           </classes>
         </configuration>
       </plugin>

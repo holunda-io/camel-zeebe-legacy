@@ -1,7 +1,6 @@
 package io.zeebe.camel.fn;
 
 import java.util.Optional;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.JsonLibrary;

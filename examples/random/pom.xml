@@ -11,6 +11,7 @@
 
   <groupId>io.zeebe.camel.examle.rnd</groupId>
   <artifactId>camel-zeebe-example-random</artifactId>
+  <name>example/${project.artifactId}</name>
 
   <dependencies>
     <dependency>

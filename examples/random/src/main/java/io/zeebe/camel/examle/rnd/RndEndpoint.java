@@ -1,5 +1,7 @@
 package io.zeebe.camel.examle.rnd;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
@@ -8,9 +10,6 @@ import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Represents a Rnd endpoint.
@@ -30,7 +29,8 @@ public class RndEndpoint extends ScheduledPollEndpoint {
     /**
      * The name.
      */
-    @UriPath @Metadata(required = "true")
+    @UriPath
+    @Metadata(required = "true")
     private String name;
 
     /**

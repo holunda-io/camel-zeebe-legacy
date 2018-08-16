@@ -2,12 +2,10 @@ package io.zeebe.camel.examle.rnd;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
-
-import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 @Slf4j
@@ -28,8 +26,7 @@ public class RndApplication {
         main.run(args);
     }
 
-    private static class ListAggregationStrategy implements AggregationStrategy
-    {
+    private static class ListAggregationStrategy implements AggregationStrategy {
 
         @SuppressWarnings("unchecked")
         @Override

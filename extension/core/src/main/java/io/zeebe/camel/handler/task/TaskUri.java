@@ -2,14 +2,13 @@ package io.zeebe.camel.handler.task;
 
 import io.zeebe.camel.fn.CamelZeebeUri;
 
-public class TaskUri extends CamelZeebeUri<TaskUri>
-{
+public class TaskUri extends CamelZeebeUri<TaskUri> {
+
     public static TaskUri topic(final String topic) {
         return new TaskUri(topic);
     }
 
-    public TaskUri(final String topic)
-    {
+    public TaskUri(final String topic) {
         super(topic);
         base(TaskEndpoint.SUBJECT);
     }

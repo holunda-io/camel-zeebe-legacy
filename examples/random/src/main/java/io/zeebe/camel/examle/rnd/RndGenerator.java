@@ -7,11 +7,12 @@ public enum RndGenerator {
     RANDOM {
         @Override
         public String generate() {
-            if (chars != null)
+            if (chars != null) {
                 return RandomStringUtils.random(length, chars);
-            else
+            } else {
                 return RandomStringUtils.random(length, start, end, letters,
                     numbers);
+            }
         }
     },
     ALPHABETIC {

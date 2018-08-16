@@ -10,11 +10,10 @@
   </parent>
 
   <artifactId>amqp-spike</artifactId>
-
+  <name>example/${project.artifactId}</name>
 
   <properties>
     <category>Messaging</category>
-
   </properties>
 
   <dependencyManagement>

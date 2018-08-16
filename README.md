@@ -18,7 +18,7 @@ because you rely on direct access to the broker.
 For example, if you want to implement the worker as an AWS/lambda, you won't have 
 that direct access available, you will have to work with some proprietary 
 messaging (SNS in this case). A lot of other use cases are thinkable in which a lightweight 
-integration of task workers without relying on direct access to the Zeebe broker is required.
+integration of job workers without relying on direct access to the Zeebe broker is required.
 
 Instead of implementation a set of adapters to different cloud and platform providers, we focus on implementation of an adapter to a 
 famous and a well-established integration library Apache Camel. By doing so we provide access to a vast amount of protocols by adopting
@@ -33,11 +33,11 @@ Here are some key features for using camel-zeebe and Apache Camel for your appli
 adapters register and hold subscriptions on various Zeebe topics and tasks and forward the events emitted to a 
 Apache Camel route (which might end with propagation of the event to an external messaging system)
 * you implement a simple Apache Camel route, which holds the configuration of your adapters
-* you implement a task worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand 
+* you implement a job worker that has no dependency on Zeebe, it just consumes a TaskEvent and produces a TaskCommand 
 (currently, only the CompleteTaskCommand is supported)
 * the entire protocol and data format conversion between your messaging and Zeebe is done by Apache Camel runtime.
 * the command is published to a messaging system and consumed again by a Zeebe client adapter close to the broker.
-* the camel-zeebe component receives the command and closes the task.
+* the camel-zeebe component receives the command and closes the job.
 
 
 ## Use Cases
@@ -58,19 +58,19 @@ Applications:
 
 ### Work on tasks 
 
-Registers a subscription for a combination of topic and taskType. When a task is created, it
+Registers a subscription for a combination of topic and taskType. When a job is created, it
 converts the internal taskEvent to an API TaskEvent that has no dependencies on 
 Zeebe. 
 
 **Syntax (start work):**
 
-`from(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>).to(<messaging>:<someChannel>)`
+`from(zeebe://<TOPIC>/job/<TASK_TYPE>?owner=<LOCK_OWNER>).to(<messaging>:<someChannel>)`
 
 This will inform external workers for the given `TASK_TYPE` that are subscribed to the messaging channel.
 
 **Syntax (complete work):**
 
-* Adapter side: `from(<messaging>:<someChannel>).to(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>)`
+* Adapter side: `from(<messaging>:<someChannel>).to(zeebe://<TOPIC>/job/<TASK_TYPE>?owner=<LOCK_OWNER>)`
 
 This will forward CompleteTaskCommands to the Zeebe client subscription and finish them.
 

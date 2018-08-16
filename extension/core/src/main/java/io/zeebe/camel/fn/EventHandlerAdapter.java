@@ -1,19 +1,19 @@
 package io.zeebe.camel.fn;
 
-import io.zeebe.client.event.Event;
-import io.zeebe.client.event.GeneralEvent;
-import io.zeebe.client.event.TaskEvent;
-import io.zeebe.client.event.UniversalEventHandler;
-import io.zeebe.client.task.TaskHandler;
+import io.zeebe.client.api.events.JobEvent;
+import io.zeebe.client.api.record.Record;
+import io.zeebe.client.api.subscription.JobHandler;
 
-public interface EventHandlerAdapter<E extends Event>
-{
+public interface EventHandlerAdapter<E extends Record> {
 
-    static EventHandlerAdapter<GeneralEvent> universalEventHandler (final UniversalEventHandler handler) {
-        return event -> handler.handle(event);
+    static EventHandlerAdapter<Record> universalEventHandler() {
+        throw new UnsupportedOperationException();
+    // FIXME: implement
+//        final UniversalEventHandler handler) {
+//        return event -> handler.handle(event);
     }
 
-    static EventHandlerAdapter<TaskEvent> taskHandler(final TaskHandler handler) {
+    static EventHandlerAdapter<JobEvent> taskHandler(final JobHandler handler) {
         return event -> handler.handle(null, event);
     }
 

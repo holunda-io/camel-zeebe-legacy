@@ -12,16 +12,16 @@ because you rely on direct access to the broker.
 For example: when you want to implement the worker as an AWS/lambda, you wont have 
 that direct access available, you will have to work with some proprietary 
 messaging (SNS in this case). A lot of other use cases are thinkable where would like to have a lightweight 
-integration of task workers without relying on direct access to the zeebe broker.
+integration of job workers without relying on direct access to the zeebe broker.
 
 This is the motivation for the camel-zeebe integration:
 
 * you run a broker ring on some host
 * you implement zeebe-client adapters that are located close to the broker and have direct access via tcp.
 * those adapters register and hold subscriptions on various zeebe topics and tasks and forward the events emitted to a camel route (which might end with proagation of the event to an external messaging system)
-* you implement a task worker that has no dependency on zeebe, it just consumes a TaskEvent and produces a task command (currently, only the CompleteTaskCommand is supported)
+* you implement a job worker that has no dependency on zeebe, it just consumes a TaskEvent and produces a job command (currently, only the CompleteTaskCommand is supported)
 * the command is published to a messaging system and consumed again by a zeebe-client adapter close to the broker.
-* the camel-zeebe component receives the command and closes the task.
+* the camel-zeebe component receives the command and closes the job.
 
 ## Use Cases
 
@@ -41,19 +41,19 @@ Applications:
 
 ### Work on tasks 
 
-Registers a subscription for a combination of topic and taskType. When a task is created, it
+Registers a subscription for a combination of topic and taskType. When a job is created, it
 converts the internal taskEvent to an API TaskEvent that has no dependencies on 
 zeebe. 
 
 **Syntax (start work):**
 
-`from(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>).to(<messaging>:<someChannel>)`
+`from(zeebe://<TOPIC>/job/<TASK_TYPE>?owner=<LOCK_OWNER>).to(<messaging>:<someChannel>)`
 
 This will inform external workers for the given taskType that are subscribed to the messaging channel.
 
 **Syntax (complete work):**
 
-* Adapter side: `from(<messaging>:<someChannel>).to(zeebe://<TOPIC>/task/<TASK_TYPE>?owner=<LOCK_OWNER>)`
+* Adapter side: `from(<messaging>:<someChannel>).to(zeebe://<TOPIC>/job/<TASK_TYPE>?owner=<LOCK_OWNER>)`
 
 This will forward CompleteTaskCommands to the zeebe client subscription and finish them.
 

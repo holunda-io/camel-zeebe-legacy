@@ -1,16 +1,14 @@
 package io.zeebe.camel.example.amqp;
 
+import io.zeebe.camel.example.amqp.model.Order;
 import javax.jms.Session;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import io.zeebe.camel.example.amqp.model.Order;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j

@@ -9,11 +9,16 @@
   </parent>
 
   <artifactId>camel-zeebe-core</artifactId>
+  <name>lib/camel-zeebe-core</name>
 
   <dependencies>
     <dependency>
       <groupId>io.zeebe</groupId>
       <artifactId>zeebe-client-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zeebe</groupId>
+      <artifactId>zeebe-broker-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>

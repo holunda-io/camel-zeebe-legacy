@@ -9,12 +9,14 @@ import org.apache.camel.util.ObjectHelper;
  * The Rnd consumer.
  */
 public class RndConsumer extends ScheduledPollConsumer {
+
     private final RndEndpoint endpoint;
 
     public RndConsumer(RndEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
     }
+
     @Override
     protected int poll() throws Exception {
 

@@ -1,59 +1,51 @@
 package io.zeebe.camel.fn;
 
-import io.zeebe.client.event.TopicSubscription;
-import io.zeebe.client.task.TaskSubscription;
+import io.zeebe.broker.job.processor.JobSubscription;
+import io.zeebe.client.api.subscription.TopicSubscription;
 
-public interface SubscriptionAdapter
-{
-    static SubscriptionAdapter of(Object subscription)
-    {
-        if (subscription instanceof TopicSubscription)
-        {
-            return of((TopicSubscription) subscription);
-        }
-        else if (subscription instanceof TaskSubscription)
-        {
-            return of((TaskSubscription) subscription);
+public interface SubscriptionAdapter {
 
-        }
-        else
-        {
-            throw new IllegalStateException("no subscriptionAdapter available for type " + subscription.getClass());
-        }
+    static SubscriptionAdapter of(Object subscription) {
+        throw new UnsupportedOperationException();
+        // FIXME: implement
+//        if (subscription instanceof TopicSubscription) {
+//            return of((TopicSubscription) subscription);
+//        } else if (subscription instanceof TaskSubscription) {
+//            return of((TaskSubscription) subscription);
+//
+//        } else {
+//            throw new IllegalStateException(
+//                "no subscriptionAdapter available for type " + subscription.getClass());
+//        }
     }
 
-    static SubscriptionAdapter of(final TopicSubscription subscription)
-    {
-        return new SubscriptionAdapter()
-        {
+    static SubscriptionAdapter of(final TopicSubscription subscription) {
+        return new SubscriptionAdapter() {
             @Override
-            public boolean isClosed()
-            {
+            public boolean isClosed() {
                 return subscription.isClosed();
             }
 
             @Override
-            public void close()
-            {
+            public void close() {
                 subscription.close();
             }
         };
     }
 
-    static SubscriptionAdapter of(final TaskSubscription subscription)
-    {
-        return new SubscriptionAdapter()
-        {
+    static SubscriptionAdapter of(final JobSubscription subscription) {
+        return new SubscriptionAdapter() {
             @Override
-            public boolean isClosed()
-            {
-                return subscription.isClosed();
+            public boolean isClosed() {
+                // FIXME: implement
+                //return subscription.isClosed();
+                throw new UnsupportedOperationException();
             }
 
             @Override
-            public void close()
-            {
-                subscription.close();
+            public void close() {
+                // FIXME: implement subscription.close();
+                throw new UnsupportedOperationException();
             }
         };
     }
@@ -68,8 +60,7 @@ public interface SubscriptionAdapter
      */
     void close();
 
-    default boolean isNotClosed()
-    {
+    default boolean isNotClosed() {
         return !isClosed();
     }
 }

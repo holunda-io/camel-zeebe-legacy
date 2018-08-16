@@ -9,16 +9,15 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class FailureTaskCommand implements TaskCommand
-{
+public class FailureTaskCommand implements TaskCommand {
+
     /**
      * Task event as a basis for this command.
      */
     private TaskEvent task;
 
     @Override
-    public CommandType getCommandType()
-    {
+    public CommandType getCommandType() {
         return CommandType.FAIL;
     }
 }

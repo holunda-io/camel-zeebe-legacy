@@ -2,7 +2,6 @@ package io.zeebe.camel.api.event;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Value;
 
@@ -11,8 +10,8 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class MessageHeader
-{
+public class MessageHeader {
+
     public static final String TOPIC_NAME = "topicName";
     public static final String PARTITION_ID = "partitionId";
     public static final String KEY = "key";
@@ -20,16 +19,15 @@ public class MessageHeader
     public static final String TYPE = "type";
     public static final String STATE = "state";
 
-    public static MessageHeader from(Map<String, Object> map)
-    {
+    public static MessageHeader from(Map<String, Object> map) {
         return MessageHeader.builder()
-                            .topicName((String) map.get(TOPIC_NAME))
-                            .partitionId((Integer) map.get(PARTITION_ID))
-                            .key((Long) map.get(KEY))
-                            .position((Long) map.get(POSITION))
-                            .type((String) map.get(TYPE))
-                            .state((String) map.get(STATE))
-                            .build();
+            .topicName((String) map.get(TOPIC_NAME))
+            .partitionId((Integer) map.get(PARTITION_ID))
+            .key((Long) map.get(KEY))
+            .position((Long) map.get(POSITION))
+            .type((String) map.get(TYPE))
+            .state((String) map.get(STATE))
+            .build();
     }
 
     /**
@@ -48,8 +46,9 @@ public class MessageHeader
     private final long position;
 
     /**
-     * The key of the event on this topic. Multiple events can have the same key if they
-     * reflect state of the same logical entity. Keys are unique for the combination of topic, partition and entity type.
+     * The key of the event on this topic. Multiple events can have the same key if they reflect state
+     * of the same logical entity. Keys are unique for the combination of topic, partition and entity
+     * type.
      */
     private final long key;
 
@@ -57,8 +56,7 @@ public class MessageHeader
 
     private final String state;
 
-    public Map<String, Object> toMap()
-    {
+    public Map<String, Object> toMap() {
         final Map<String, Object> header = new HashMap<>();
 
         header.put(TOPIC_NAME, topicName);

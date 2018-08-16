@@ -9,8 +9,8 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class CompleteTaskCommand implements TaskCommand
-{
+public class CompleteTaskCommand implements TaskCommand {
+
     /**
      * Task event as a basis for this command.
      */
@@ -23,6 +23,7 @@ public class CompleteTaskCommand implements TaskCommand
 
     /**
      * Determines if the payload exists.
+     *
      * @return <code>true</code> if payload is set.
      */
     public boolean hasPayload() {
@@ -30,8 +31,7 @@ public class CompleteTaskCommand implements TaskCommand
     }
 
     @Override
-    public CommandType getCommandType()
-    {
+    public CommandType getCommandType() {
         return CommandType.COMPLETE;
     }
 }

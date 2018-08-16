@@ -12,6 +12,7 @@
   </parent>
 
   <artifactId>embedded-activemq</artifactId>
+  <name>example/${project.artifactId}</name>
 
   <dependencyManagement>
     <dependencies>

@@ -1,21 +1,16 @@
 package io.zeebe.camel.example.amqp;
 
+import io.zeebe.camel.example.amqp.model.Order;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.camel.CamelContext;
-import org.apache.camel.RoutesBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import io.zeebe.camel.example.amqp.model.Order;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sends an {@link Order} message to the embedded queue every 3 seconds.
@@ -38,19 +33,18 @@ public class Application implements SmartLifecycle {
     public void run() throws Exception {
         log.info("Spring Boot Embedded ActiveMQ Configuration Example");
 
-        Order myMessage = new Order(count.getAndIncrement() + " - Sending JMS Message using Embedded activeMQ", new Date());
+        Order myMessage = new Order(
+            count.getAndIncrement() + " - Sending JMS Message using Embedded activeMQ", new Date());
         orderSender.send(myMessage);
 
     }
 
     //@Bean
     public RouteBuilder readfromQueue() {
-        return new RouteBuilder()
-        {
+        return new RouteBuilder() {
 
             @Override
-            public void configure() throws Exception
-            {
+            public void configure() throws Exception {
                 from("activmq://vm:" + ActiveMQConfig.ORDER_QUEUE).to("stream:out");
             }
         };
@@ -77,14 +71,17 @@ public class Application implements SmartLifecycle {
 
     @Override
     public void stop() {
-        this.stop(() -> {});
+        this.stop(() -> {
+        });
     }
 
-    @Override public boolean isRunning() {
+    @Override
+    public boolean isRunning() {
         return isRunning;
     }
 
-    @Override public int getPhase() {
+    @Override
+    public int getPhase() {
         return Integer.MAX_VALUE;
     }
 }
