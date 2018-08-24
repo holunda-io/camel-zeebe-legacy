@@ -3,6 +3,8 @@ package io.zeebe.camel;
 import static org.junit.Assert.fail;
 
 import io.zeebe.client.ZeebeClient;
+import io.zeebe.spring.api.SpringZeebeApiKt;
+import io.zeebe.spring.api.command.CreateDeployment;
 import io.zeebe.test.ZeebeTestRule;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +34,7 @@ public class ZeebeWorksSpike {
 
         this.topic = zeebe.getDefaultTopic();
 
-        // FIXME
-//        client.workflows().deploy(topic)
-//            .addResourceFromClasspath("dummy.bpmn")
-//            .execute();
+        SpringZeebeApiKt.apply(client, new CreateDeployment(topic, "dummy.bpmn")).join();
     }
 
     @After

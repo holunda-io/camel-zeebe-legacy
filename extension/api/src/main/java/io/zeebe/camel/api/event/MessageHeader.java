@@ -1,5 +1,6 @@
 package io.zeebe.camel.api.event;
 
+import io.zeebe.protocol.impl.RecordMetadata;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
@@ -19,9 +20,10 @@ public class MessageHeader {
     public static final String TYPE = "type";
     public static final String STATE = "state";
 
-    public static MessageHeader from(Map<String, Object> map) {
+
+    public static MessageHeader from(RecordMetadata metadata) {
         return MessageHeader.builder()
-            .topicName((String) map.get(TOPIC_NAME))
+            .topicName(metadata.get)
             .partitionId((Integer) map.get(PARTITION_ID))
             .key((Long) map.get(KEY))
             .position((Long) map.get(POSITION))

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.camel.fn.ClientSupplier;
 import io.zeebe.camel.fn.CreateExchangeForEvent;
 import io.zeebe.camel.fn.SubscriptionAdapter;
+import io.zeebe.client.api.record.ZeebeObjectMapper;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +27,13 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends
     protected final CreateExchangeForEvent createExchangeForEvent;
 
     protected SubscriptionAdapter subscriptionAdapter;
-    protected final ObjectMapper mapper;
+    protected final ZeebeObjectMapper mapper;
 
     public ZeebeConsumer(final ZE endpoint, final Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
-        this.createExchangeForEvent = null; // FIXME: implement new CreateExchangeForEvent(() -> endpoint.createExchange());
-        this.mapper = null; // FIXME: implement endpoint.getClient().getObjectMapper();
+        this.createExchangeForEvent = new CreateExchangeForEvent(() -> endpoint.createExchange());
+        this.mapper = endpoint.getClient().getObjectMapper();
     }
 
     protected abstract EH createHandler();
@@ -40,14 +41,14 @@ public abstract class ZeebeConsumer<ZE extends ZeebeEndpoint, EH, ES> extends
     protected abstract ES createSubscription(EH handler);
 
     @Override
-    protected void doStart() throws Exception {
+    protected void doStart() {
         EH handler = createHandler();
 
         subscriptionAdapter = SubscriptionAdapter.of(createSubscription(handler));
     }
 
     @Override
-    protected void doStop() throws Exception {
+    protected void doStop() {
         log.info("Stopping consumer {}.", this.getClass());
         Optional.ofNullable(subscriptionAdapter).filter(SubscriptionAdapter::isNotClosed)
             .ifPresent(SubscriptionAdapter::close);

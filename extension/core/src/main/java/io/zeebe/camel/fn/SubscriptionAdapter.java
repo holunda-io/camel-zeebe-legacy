@@ -1,6 +1,6 @@
 package io.zeebe.camel.fn;
 
-import io.zeebe.broker.job.processor.JobSubscription;
+import io.zeebe.client.api.subscription.JobWorker;
 import io.zeebe.client.api.subscription.TopicSubscription;
 
 public interface SubscriptionAdapter {
@@ -33,7 +33,7 @@ public interface SubscriptionAdapter {
         };
     }
 
-    static SubscriptionAdapter of(final JobSubscription subscription) {
+    static SubscriptionAdapter of(final JobWorker subscription) {
         return new SubscriptionAdapter() {
             @Override
             public boolean isClosed() {

@@ -1,5 +1,6 @@
 package io.zeebe.camel;
 
+import io.zeebe.camel.api.command.SomeCommand;
 import io.zeebe.camel.handler.Handler;
 import io.zeebe.camel.handler.universal.UniversalEventEndpoint;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class EndpointConfiguration {
     @Getter
     @ToString
     public static class Remaining {
+        SomeCommand cmd = new SomeCommand("foo");
 
         private final String topic;
         private final Optional<String> subject;

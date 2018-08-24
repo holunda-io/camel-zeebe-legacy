@@ -17,10 +17,6 @@
       <artifactId>zeebe-client-java</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.zeebe</groupId>
-      <artifactId>zeebe-broker-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
     </dependency>

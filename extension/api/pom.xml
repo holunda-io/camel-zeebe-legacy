@@ -24,6 +24,16 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- kotlin -->
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-kotlin</artifactId>
+    </dependency>
+
     <!-- TEST -->
     <dependency>
       <groupId>io.zeebe.camel</groupId>
@@ -35,6 +45,12 @@
       <artifactId>assertj-core</artifactId>
       <!-- use version 2.1.0 or higher -->
       <version>2.1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-test</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -51,6 +67,27 @@
             <param>io.zeebe.camel.api.event.JobEvent</param>
           </classes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
