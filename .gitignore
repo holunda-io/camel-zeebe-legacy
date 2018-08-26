@@ -16,3 +16,9 @@ buildNumber.properties
 
 
 .DS_Store
+
+.gradle
+out/
+build/
+
+.tmp/
