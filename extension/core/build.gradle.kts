@@ -28,15 +28,16 @@ dependencies {
   testCompile("org.apache.camel:camel-test")
   testCompile("org.springframework.boot:spring-boot-starter-test:2.0.4.RELEASE")
 
+//
 //  {
 //    exclude(module = "junit")
 //  }
 //  testImplementation("org.junit.jupiter:junit-jupiter-api")
 //  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
-  testCompile("com.tngtech.jgiven:jgiven-junit:0.16.0")
-  testCompile("com.tngtech.jgiven:jgiven-spring:0.16.0")
-  testCompile("com.tngtech.jgiven:jgiven-html5-report:0.16.0")
+//  testCompile("com.tngtech.jgiven:jgiven-junit:0.16.0")
+//  testCompile("com.tngtech.jgiven:jgiven-spring:0.16.0")
+//  testCompile("com.tngtech.jgiven:jgiven-html5-report:0.16.0")
   testCompile("org.awaitility:awaitility:3.1.0")
 }
 

@@ -27,7 +27,5 @@ subprojects {
     }
   }
 
-  val test by tasks.getting(Test::class) {
-    useJUnitPlatform()
-  }
+
 }

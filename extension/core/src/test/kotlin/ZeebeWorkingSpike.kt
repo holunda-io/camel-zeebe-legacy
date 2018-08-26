@@ -30,7 +30,7 @@ class ZeebeWorkingSpike {
     //createTopic()
     subscribe()
     deploy()
-    val e = startWorkflow()
+    startWorkflow()
 
     zeebe.client.topicClient()
         .jobClient()
