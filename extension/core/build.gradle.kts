@@ -18,8 +18,6 @@ dependencies {
   compile("org.apache.camel:camel-core")
   compile("io.zeebe:zeebe-client-java")
 
-  compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-  compile("org.jetbrains.kotlin:kotlin-reflect")
   //compile("com.fasterxml.jackson.module:jackson-module-kotlin")
   compile ("io.github.microutils:kotlin-logging:1.5.9")
 
@@ -27,6 +25,8 @@ dependencies {
   testCompile("io.zeebe:zeebe-broker-core")
   testCompile("org.apache.camel:camel-test")
   testCompile("org.springframework.boot:spring-boot-starter-test:2.0.4.RELEASE")
+  testCompile("org.mockito:mockito-core")
+
 
 //
 //  {

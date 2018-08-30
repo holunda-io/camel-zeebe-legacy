@@ -36,8 +36,7 @@ class ZeebeWorkingSpike {
         .jobClient()
         .newWorker()
         .jobType("doSomething")
-        .handler({client, job -> complete(client, job)        }
-        )
+        .handler { client, job -> complete(client, job) }
         .name("jobWorkerEndpoint")
         .open()
 
@@ -57,7 +56,7 @@ class ZeebeWorkingSpike {
 
     val routeBuilder: RouteBuilder = object : RouteBuilder() {
       override fun configure() {
-        from("zeebe:jobworker")
+        from("zeebe:jobworker?topic=default-topic")
             .to("direct:foo")
 
         from("direct:foo")
@@ -104,20 +103,20 @@ class ZeebeWorkingSpike {
 
   private fun startWorkflow(): WorkflowInstanceEvent {
     val event = zeebe.client
-      .topicClient().workflowClient()
-      .newCreateInstanceCommand()
-      .bpmnProcessId("process_dummy")
-      .latestVersion()
+        .topicClient().workflowClient()
+        .newCreateInstanceCommand()
+        .bpmnProcessId("process_dummy")
+        .latestVersion()
         .payload("{\"foo\": \"" + UUID.randomUUID().toString() + "\"}")
         .send()
-      .join()
+        .join()
 
-        logger.info { "workflow: ${event.state}" }
+    logger.info { "workflow: ${event.state}" }
 
     return event
   }
 
-  fun complete(client: JobClient, job:JobEvent) {
+  fun complete(client: JobClient, job: JobEvent) {
     logger.info { "\n\n\n\n\n\n\nJob: $job    \n\n\n\n\n\n\n\n" }
 
 
@@ -128,14 +127,14 @@ class ZeebeWorkingSpike {
   }
 
   private fun subscribe() = zeebe.client.topicClient()
-  .newSubscription()
-  .name("record-logger")
-  .recordHandler({ record ->
-    records += record
-    logger.info { "\n\n\n\n\n\n Record-Logger: ${record.metadata.key}  ${record.metadata.valueType}   ${record.toJson()}       \n\n\n\n\n\n\n\n" }
-  })
-  .startAtHeadOfTopic()
-  .forcedStart()
-  .open();
+      .newSubscription()
+      .name("record-logger")
+      .recordHandler({ record ->
+        records += record
+        logger.info { "\n\n\n\n\n\n Record-Logger: ${record.metadata.key}  ${record.metadata.valueType}   ${record.toJson()}       \n\n\n\n\n\n\n\n" }
+      })
+      .startAtHeadOfTopic()
+      .forcedStart()
+      .open();
 
 }

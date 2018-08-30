@@ -12,6 +12,9 @@ import org.apache.camel.impl.DefaultConsumer
 import org.apache.camel.impl.DefaultEndpoint
 import org.apache.camel.spi.UriEndpoint
 import java.util.function.Supplier
+import org.apache.camel.spi.UriParam
+
+
 
 
 @UriEndpoint(
@@ -24,6 +27,10 @@ class SubscribeJobWorkerEndpoint(val client: Supplier<ZeebeClient>, val createEn
     const val COMMAND = "jobworker"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
   }
+
+  @UriParam(name = "topic", label = "The topic to subscribe to")
+  @org.apache.camel.spi.Metadata(required = "true")
+   lateinit var topic: String
 
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
 
@@ -53,6 +60,9 @@ class SubscribeJobWorkerEndpoint(val client: Supplier<ZeebeClient>, val createEn
   override fun createProducer(): Producer = throw UnsupportedOperationException("${SYNTAX} - consumerOnly")
   override fun isSingleton() = true
   override fun createEndpointUri(): String = createEndpoint.uri
+
+  override fun toString() = "SubscribeJobWorkerEndpoint(topic='$topic')"
+
 
 }
 

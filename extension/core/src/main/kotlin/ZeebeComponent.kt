@@ -25,9 +25,9 @@ class ZeebeComponent(val client: Supplier<ZeebeClient>) : DefaultComponent() {
 
     logger.info { "createEndpoint: $createEndpoint" }
 
-    when(remaining) {
-      "completejob" -> return CompleteJobEndpoint(client, createEndpoint)
-      "jobworker" -> return SubscribeJobWorkerEndpoint(client, createEndpoint)
+    return when (remaining) {
+      CompleteJobEndpoint.COMMAND -> CompleteJobEndpoint(client, createEndpoint)
+      SubscribeJobWorkerEndpoint.COMMAND -> SubscribeJobWorkerEndpoint(client, createEndpoint)
       else -> throw IllegalArgumentException("unkown: $remaining")
     }
   }
