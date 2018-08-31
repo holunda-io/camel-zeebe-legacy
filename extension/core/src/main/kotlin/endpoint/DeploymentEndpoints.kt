@@ -1,23 +1,19 @@
 package io.zeebe.camel.endpoint
 
 import io.zeebe.camel.api.command.DeployCommand
-import io.zeebe.camel.CamelZeebeContext
+import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.ZeebeComponent
-import io.zeebe.client.ZeebeClient
 import mu.KLogging
 import org.apache.camel.Exchange
-import org.apache.camel.Processor
 import org.apache.camel.Producer
-import org.apache.camel.impl.DefaultEndpoint
 import org.apache.camel.impl.DefaultProducer
 import org.apache.camel.spi.UriEndpoint
-import java.util.function.Supplier
 
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME, title = "Zeebe Deployment", syntax = DeployModelEndpoint.SYNTAX,
     producerOnly = true
 )
-class DeployModelEndpoint(context: CamelZeebeContext) : ZeebeProducerOnlyEndpoint(context) {
+class DeployModelEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context) {
 
   companion object : KLogging() {
     const val COMMAND = "deployment"

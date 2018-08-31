@@ -1,8 +1,7 @@
 package io.zeebe.camel.endpoint
 
-import io.zeebe.camel.CamelZeebeContext
+import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.ZeebeComponent
-import io.zeebe.client.ZeebeClient
 import io.zeebe.client.api.events.JobEvent
 import io.zeebe.client.api.subscription.JobWorker
 import mu.KLogging
@@ -11,18 +10,16 @@ import org.apache.camel.Exchange
 import org.apache.camel.Processor
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultConsumer
-import org.apache.camel.impl.DefaultEndpoint
 import org.apache.camel.impl.DefaultProducer
 import org.apache.camel.spi.UriEndpoint
 import org.apache.camel.spi.UriParam
-import java.util.function.Supplier
 
 
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME, title = "Zeebe Complete Job", syntax = CompleteJobEndpoint.SYNTAX,
     producerOnly = true
 )
-class CompleteJobEndpoint(context: CamelZeebeContext) : ZeebeProducerOnlyEndpoint(context) {
+class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context) {
 
   companion object {
     const val COMMAND = "completejob"
@@ -50,7 +47,7 @@ class CompleteJobEndpoint(context: CamelZeebeContext) : ZeebeProducerOnlyEndpoin
     scheme = ZeebeComponent.SCHEME, title = "Zeebe Subscribe JobWorker", syntax = SubscribeJobWorkerEndpoint.SYNTAX,
     consumerOnly = true
 )
-class SubscribeJobWorkerEndpoint(context: CamelZeebeContext) : ZeebeConsumerOnlyEndpoint(context) {
+class SubscribeJobWorkerEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEndpoint(context) {
 
   companion object : KLogging() {
     const val COMMAND = "jobworker"

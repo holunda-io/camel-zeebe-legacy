@@ -21,17 +21,17 @@ class ZeebeComponent(val clientSupplier: Supplier<ZeebeClient>) : DefaultCompone
     const val SCHEME = "zeebe"
   }
 
-  fun createEndpoint(context: CamelZeebeContext): Endpoint = when (context.remaining) {
+  fun createEndpoint(context: ZeebeComponentContext): Endpoint = when (context.remaining) {
     CompleteJobEndpoint.COMMAND -> CompleteJobEndpoint(context)
     SubscribeJobWorkerEndpoint.COMMAND -> SubscribeJobWorkerEndpoint(context)
     else -> throw IllegalArgumentException("unkown: ${context.remaining}")
   }
 
-  override fun createEndpoint(uri: String, remaining: String, parameters: MutableMap<String, Any>): Endpoint = createEndpoint(CamelZeebeContext(uri, remaining, parameters, clientSupplier))
+  override fun createEndpoint(uri: String, remaining: String, parameters: MutableMap<String, Any>): Endpoint = createEndpoint(ZeebeComponentContext(uri, remaining, parameters, clientSupplier))
 
 }
 
-data class CamelZeebeContext(
+data class ZeebeComponentContext(
     val uri: String,
     val remaining: String,
     val parameters: Map<String, Any>,
