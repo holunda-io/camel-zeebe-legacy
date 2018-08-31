@@ -15,6 +15,9 @@ configure<DependencyManagementExtension> {
 }
 
 dependencies {
+
+  compile(project(":extension:camel-zeebe-api"))
+
   compile("org.apache.camel:camel-core")
   compile("io.zeebe:zeebe-client-java")
 

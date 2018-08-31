@@ -1,6 +1,6 @@
 package io.zeebe.camel
 
-import io.zeebe.camel.jobworker.SubscribeJobWorkerEndpoint
+import io.zeebe.camel.endpoint.SubscribeJobWorkerEndpoint
 import io.zeebe.client.ZeebeClient
 import org.apache.camel.impl.DefaultCamelContext
 import org.assertj.core.api.Assertions.assertThat

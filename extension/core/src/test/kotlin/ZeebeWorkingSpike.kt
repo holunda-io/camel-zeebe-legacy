@@ -52,7 +52,7 @@ class ZeebeWorkingSpike {
     //createTopic()
     subscribe()
     deploy()
-    startWorkflow()
+
 
     val routeBuilder: RouteBuilder = object : RouteBuilder() {
       override fun configure() {
@@ -72,6 +72,7 @@ class ZeebeWorkingSpike {
 
     camel.start()
 
+    startWorkflow()
 
     Awaitility.await().untilAsserted({
       records.find { it.metadata.intent == "COMPLETED" } != null

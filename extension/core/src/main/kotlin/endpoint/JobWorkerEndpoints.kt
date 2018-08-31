@@ -1,19 +1,48 @@
-package io.zeebe.camel.jobworker
+package io.zeebe.camel.endpoint
 
-import io.zeebe.camel.CreateEndpoint
+import io.zeebe.camel.CamelZeebeContext
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.client.ZeebeClient
+import io.zeebe.client.api.events.JobEvent
 import io.zeebe.client.api.subscription.JobWorker
 import mu.KLogging
 import org.apache.camel.Consumer
+import org.apache.camel.Exchange
 import org.apache.camel.Processor
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultConsumer
 import org.apache.camel.impl.DefaultEndpoint
+import org.apache.camel.impl.DefaultProducer
 import org.apache.camel.spi.UriEndpoint
-import java.util.function.Supplier
 import org.apache.camel.spi.UriParam
+import java.util.function.Supplier
 
+
+@UriEndpoint(
+    scheme = ZeebeComponent.SCHEME, title = "Zeebe Complete Job", syntax = CompleteJobEndpoint.SYNTAX,
+    producerOnly = true
+)
+class CompleteJobEndpoint(context: CamelZeebeContext) : ZeebeProducerOnlyEndpoint(context) {
+
+  companion object {
+    const val COMMAND = "completejob"
+    const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+  }
+
+  override fun createProducer(): Producer = object : DefaultProducer(this) {
+    override fun process(exchange: Exchange) {
+      val jobEvent = exchange.getIn().getBody(JobEvent::class.java)
+
+      context.topicClient()
+          .jobClient()
+          .newCompleteCommand(jobEvent)
+          .send().join()
+    }
+  }
+
+  override fun getSyntax(): String = SYNTAX
+
+}
 
 
 
@@ -21,7 +50,7 @@ import org.apache.camel.spi.UriParam
     scheme = ZeebeComponent.SCHEME, title = "Zeebe Subscribe JobWorker", syntax = SubscribeJobWorkerEndpoint.SYNTAX,
     consumerOnly = true
 )
-class SubscribeJobWorkerEndpoint(val client: Supplier<ZeebeClient>, val createEndpoint: CreateEndpoint) : DefaultEndpoint() {
+class SubscribeJobWorkerEndpoint(context: CamelZeebeContext) : ZeebeConsumerOnlyEndpoint(context) {
 
   companion object : KLogging() {
     const val COMMAND = "jobworker"
@@ -30,14 +59,14 @@ class SubscribeJobWorkerEndpoint(val client: Supplier<ZeebeClient>, val createEn
 
   @UriParam(name = "topic", label = "The topic to subscribe to")
   @org.apache.camel.spi.Metadata(required = "true")
-   lateinit var topic: String
+  lateinit var topic: String
 
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
 
     lateinit var jobWorker: JobWorker
 
     override fun doStart() {
-      jobWorker = client.get().topicClient()
+      jobWorker = context.topicClient()
           .jobClient()
           .newWorker()
           .jobType("doSomething")
@@ -56,13 +85,6 @@ class SubscribeJobWorkerEndpoint(val client: Supplier<ZeebeClient>, val createEn
         jobWorker.close()
     }
   }
-
-  override fun createProducer(): Producer = throw UnsupportedOperationException("${SYNTAX} - consumerOnly")
-  override fun isSingleton() = true
-  override fun createEndpointUri(): String = createEndpoint.uri
-
-  override fun toString() = "SubscribeJobWorkerEndpoint(topic='$topic')"
-
+  override fun getSyntax(): String = CompleteJobEndpoint.SYNTAX
 
 }
-
