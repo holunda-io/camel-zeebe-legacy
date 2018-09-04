@@ -18,124 +18,129 @@ import java.util.function.Supplier
 
 class ZeebeWorkingSpike {
 
-  companion object : KLogging()
+    companion object : KLogging()
 
-  @get:Rule
-  val zeebe = ZeebeTestRule()
+    @get:Rule
+    val zeebe = ZeebeTestRule()
 
-  private val records = mutableListOf<Record>()
+    private val records = mutableListOf<Record>()
 
-  @Test
-  fun `without zeebe`() {
-    //createTopic()
-    subscribe()
-    deploy()
-    startWorkflow()
+    @Test
+    fun `without zeebe`() {
+        //createTopic()
+        subscribe()
+        deploy()
+        startWorkflow()
 
-    zeebe.client.topicClient()
-        .jobClient()
-        .newWorker()
-        .jobType("doSomething")
-        .handler { client, job -> complete(client, job) }
-        .name("jobWorkerEndpoint")
-        .open()
+        zeebe.client.topicClient()
+                .jobClient()
+                .newWorker()
+                .jobType("doSomething")
+                .handler { client, job -> complete(client, job) }
+                .name("jobWorkerEndpoint")
+                .open()
 
-    Awaitility.await().untilAsserted({
-      records.find { it.metadata.intent == "COMPLETED" } != null
-    })
+        Awaitility.await().untilAsserted({
+            records.find { it.metadata.intent == "COMPLETED" } != null
+        })
 
-    //zeebe.waitUntilJobCompleted(4294968672L)
-  }
-
-  @Test
-  fun `start process and work on task`() {
-    //createTopic()
-    subscribe()
-    deploy()
-
-
-    val routeBuilder: RouteBuilder = object : RouteBuilder() {
-      override fun configure() {
-        from("zeebe:jobworker?topic=default-topic")
-            .to("direct:foo")
-
-        from("direct:foo")
-            .to("zeebe:completejob")
-      }
+        //zeebe.waitUntilJobCompleted(4294968672L)
     }
 
-    val camel: CamelContext = DefaultCamelContext()
+    @Test
+    fun `start process and work on task`() {
+        //createTopic()
+        subscribe()
+        deploy()
 
 
-    camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
-    camel.addRoutes(routeBuilder)
+        val routeBuilder: RouteBuilder = object : RouteBuilder() {
+            override fun configure() {
+                from("zeebe:jobworker?topic=default-topic")
+                        .to("direct:foo")
 
-    camel.start()
+                from("direct:foo")
+                        .to("zeebe:completejob")
+            }
+        }
 
-    startWorkflow()
-
-    Awaitility.await().untilAsserted({
-      records.find { it.metadata.intent == "COMPLETED" } != null
-    })
-  }
-
-  private fun createTopic() =
-      zeebe.client
-          .newCreateTopicCommand()
-          .name("topic")
-          .partitions(1)
-          .replicationFactor(1)
-          .send()
-          .join()
-          .let {
-            logger.info { "topic: ${it.state}" }
-          }
-
-  private fun deploy() = zeebe.client
-      .topicClient()
-      .workflowClient()
-      .newDeployCommand()
-      .addResourceFromClasspath("dummy.bpmn")
-      .send()
-      .join()
-      .let {
-        logger.info { "deployment: ${it.state}" }
-      }
-
-  private fun startWorkflow(): WorkflowInstanceEvent {
-    val event = zeebe.client
-        .topicClient().workflowClient()
-        .newCreateInstanceCommand()
-        .bpmnProcessId("process_dummy")
-        .latestVersion()
-        .payload("{\"foo\": \"" + UUID.randomUUID().toString() + "\"}")
-        .send()
-        .join()
-
-    logger.info { "workflow: ${event.state}" }
-
-    return event
-  }
-
-  fun complete(client: JobClient, job: JobEvent) {
-    logger.info { "\n\n\n\n\n\n\nJob: $job    \n\n\n\n\n\n\n\n" }
+        val camel: CamelContext = DefaultCamelContext()
 
 
-    client.newCompleteCommand(job)
-        .payload("{\"bar\": \"" + 42 + "\"}")
-        .send().join()
+        camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
+        camel.addRoutes(routeBuilder)
 
-  }
+        camel.start()
 
-  private fun subscribe() = zeebe.client.topicClient()
-      .newSubscription()
-      .name("record-logger")
-      .recordHandler({ record ->
-        records += record
-        logger.info { "\n\n\n\n\n\n Record-Logger: ${record.metadata.key}  ${record.metadata.valueType}   ${record.toJson()}       \n\n\n\n\n\n\n\n" }
-      })
-      .startAtHeadOfTopic()
-      .forcedStart()
-      .open();
+        startWorkflow()
+
+        Awaitility.await().untilAsserted {
+            records.find { it.metadata.intent == "COMPLETED" } != null
+        }
+    }
+
+    private fun createTopic() =
+            zeebe.client
+                    .newCreateTopicCommand()
+                    .name("topic")
+                    .partitions(1)
+                    .replicationFactor(1)
+                    .send()
+                    .join()
+                    .let {
+                        logger.info { "topic: ${it.state}" }
+                    }
+
+    private fun deploy() = zeebe.client
+            .topicClient()
+            .workflowClient()
+            .newDeployCommand()
+            .addResourceFromClasspath("dummy.bpmn")
+            .send()
+            .join()
+            .let {
+                logger.info { "deployment: ${it.state}" }
+            }
+
+    private fun startWorkflow(): WorkflowInstanceEvent {
+        val event = zeebe.client
+                .topicClient().workflowClient()
+                .newCreateInstanceCommand()
+                .bpmnProcessId("process_dummy")
+                .latestVersion()
+                .payload("{\"foo\": \"" + UUID.randomUUID().toString() + "\"}")
+                .send()
+                .join()
+
+        logger.info { "workflow: ${event.state}" }
+
+        return event
+    }
+
+    fun complete(client: JobClient, job: JobEvent) {
+        logger.info { "\n\n\n\n\n\n\nJob: $job    \n\n\n\n\n\n\n\n" }
+
+
+        client.newCompleteCommand(job)
+                .payload("{\"bar\": \"" + 42 + "\"}")
+                .send().join()
+
+    }
+
+    private fun subscribe() = zeebe.client.topicClient()
+            .newSubscription()
+            .name("record-logger")
+            .recordHandler { record ->
+                records += record
+                logger.info {
+                    """
+              Record-Logger: ${record.metadata.key} ${record.metadata.valueType}
+                  ${record.toJson()}
+                    """
+                }
+            }
+            .startAtHeadOfTopic()
+            .forcedStart()
+            .open();
 
 }

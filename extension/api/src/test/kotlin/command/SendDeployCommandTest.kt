@@ -1,6 +1,6 @@
+@file:Suppress("PackageDirectoryMismatch")
 package io.zeebe.camel.api.command
 
-import org.apache.camel.Produce
 import org.apache.camel.ProducerTemplate
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.impl.DefaultCamelContext
