@@ -1,12 +1,11 @@
 package io.zeebe.camel
 
-import io.zeebe.camel.endpoint.CompleteJobEndpoint
-import io.zeebe.camel.endpoint.DeployModelEndpoint
-import io.zeebe.camel.endpoint.StartProcessEndpoint
-import io.zeebe.camel.endpoint.SubscribeJobWorkerEndpoint
+import endpoint.JobCompleteEndpoint
+import io.zeebe.camel.endpoint.ProcessDeployEndpoint
+import io.zeebe.camel.endpoint.ProcessStartEndpoint
+import io.zeebe.camel.endpoint.JobSubscribeEndpoint
 import io.zeebe.client.ZeebeClient
 import io.zeebe.client.api.clients.JobClient
-import io.zeebe.client.api.clients.TopicClient
 import io.zeebe.client.api.clients.WorkflowClient
 import io.zeebe.client.api.events.JobEvent
 import io.zeebe.client.impl.ZeebeClientImpl
@@ -29,10 +28,10 @@ class ZeebeComponent(private val clientSupplier: Supplier<ZeebeClient>) : Defaul
   }
 
   private fun createEndpoint(context: ZeebeComponentContext): Endpoint = when (context.remaining) {
-    CompleteJobEndpoint.COMMAND -> CompleteJobEndpoint(context)
-    DeployModelEndpoint.COMMAND -> DeployModelEndpoint(context)
-    SubscribeJobWorkerEndpoint.COMMAND -> SubscribeJobWorkerEndpoint(context)
-    StartProcessEndpoint.COMMAND -> StartProcessEndpoint(context)
+    JobCompleteEndpoint.COMMAND -> JobCompleteEndpoint(context)
+    ProcessDeployEndpoint.COMMAND -> ProcessDeployEndpoint(context)
+    JobSubscribeEndpoint.COMMAND -> JobSubscribeEndpoint(context)
+    ProcessStartEndpoint.COMMAND -> ProcessStartEndpoint(context)
     else -> throw IllegalArgumentException("unkown: ${context.remaining}")
   }
 
@@ -49,6 +48,16 @@ data class ZeebeComponentContext(
     val parameters: Map<String, Any>,
     val clientSupplier: Supplier<ZeebeClient>
 ) {
+
+  val type : String
+  val command : String
+
+  init {
+    val parts: MatchResult.Destructured = """(\w+)/(\w+)""".toRegex().find(remaining)!!.destructured
+
+    type = parts.component1()
+    command = parts.component2()
+  }
 
   val workflowClient: WorkflowClient by lazy {
     clientSupplier.get().topicClient().workflowClient()

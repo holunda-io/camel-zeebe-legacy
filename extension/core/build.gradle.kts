@@ -28,7 +28,8 @@ dependencies {
   testCompile("io.zeebe:zeebe-broker-core")
   testCompile("org.apache.camel:camel-test")
   testCompile("org.springframework.boot:spring-boot-starter-test:2.0.4.RELEASE")
-  testCompile("org.mockito:mockito-core")
+  testCompile("org.mockito:mockito-core:2.15.0")
+  testCompile("org.assertj:assertj-core:3.10.0")
 
 //
 //  {

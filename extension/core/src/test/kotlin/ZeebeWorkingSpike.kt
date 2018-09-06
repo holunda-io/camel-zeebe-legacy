@@ -28,54 +28,60 @@ class ZeebeWorkingSpike {
 
   private val records = mutableListOf<Record>()
 
-  @Test
-  fun `start process and work on task`() {
-    subscribeLogger()
+  lateinit var deployGateway: DeployGateway
+  lateinit var startGateway : StartProcessGateway
+
+  data class ReturnPayload(val bar:Int)
+  data class StartPayload(val foo: String)
+
+  class JobWorkerBean : JobWorker<ReturnPayload> {
+    override fun apply(event: io.zeebe.camel.api.event.JobEvent): CompleteJobCommand<ReturnPayload> = CompleteJobCommand(event, ReturnPayload(42))
+  }
+
+  private fun initCamel() {
 
     // create default context for testing
     val camel: CamelContext = DefaultCamelContext()
 
     // allow sending deploy commands to route
-    val deployGateway = ProxyBuilder(camel).endpoint("direct:deploy").build(DeployGateway::class.java)
+    deployGateway = ProxyBuilder(camel).endpoint("direct:deploy").build(DeployGateway::class.java)
     // allow sending start commands to route
-    val startProcessGateway = ProxyBuilder(camel).endpoint("direct:start").build(StartProcessGateway::class.java)
+    startGateway = ProxyBuilder(camel).endpoint("direct:start").build(StartProcessGateway::class.java)
 
     // register zeebe main component
     camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
 
-    data class ReturnPayload(val bar:Int)
-
-    class JobWorkerBean : JobWorker<ReturnPayload> {
-      override fun apply(event: io.zeebe.camel.api.event.JobEvent): CompleteJobCommand<ReturnPayload> = CompleteJobCommand(event, ReturnPayload(42))
-    }
 
     // register routes
     camel.addRoutes(object : RouteBuilder() {
       override fun configure() {
-        from("direct:start").to("zeebe:start-process")
-        from("direct:deploy").to("zeebe:deployment")
+        from("direct:start").to("zeebe:process/start")
+        from("direct:deploy").to("zeebe:process/deploy")
 
-        from("zeebe:jobworker")
+        from("zeebe:job/subscribe?jobType=doSomething")
             .bean(JobWorkerBean::class.java)
-            .to("zeebe:complete-job")
+            .to("zeebe:job/complete")
       }
     })
 
     // start the context
     camel.start()
+  }
 
-    data class Payload(val foo: String = UUID.randomUUID().toString())
+  @Test
+  fun `start process and work on task`() {
+    initCamel()
+    subscribeLogger()
 
     // use proxy to send deploy command to direct:deploy
     deployGateway.send(DeployCommand.of("/dummy.bpmn"))
 
     // use proxy to send start command to direct:start
-    startProcessGateway.send(StartProcessCommand("process_dummy", payload =  Payload()))
+    startGateway.send(StartProcessCommand("process_dummy", payload =  StartPayload(UUID.randomUUID().toString())))
 
     // the completion is done via route zeebe:jobworker->direct:foo->zeebe:complete
 
     await().untilAsserted {
-
       logger.info { "records: $records" }
       records.find { it.metadata.intent == "COMPLETED" } != null
     }
