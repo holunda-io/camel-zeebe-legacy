@@ -9,6 +9,7 @@ import org.junit.Test
 import org.mockito.Answers
 import org.mockito.Mockito
 
+@Deprecated("seems like this is not needed anymore?")
 class ZeebeComponentTest {
 
     private val camel = DefaultCamelContext()
@@ -21,9 +22,7 @@ class ZeebeComponentTest {
     @Test
     fun `create jobworker endpoint`() {
 
-        val endpoint = camel.getEndpoint("zeebe:jobworker?topic=theTopic", SubscribeJobWorkerEndpoint::class.java)
-
-        assertThat(endpoint.topic).isEqualTo("theTopic")
+        val endpoint = camel.getEndpoint("zeebe:jobworker", SubscribeJobWorkerEndpoint::class.java)
 
     }
 

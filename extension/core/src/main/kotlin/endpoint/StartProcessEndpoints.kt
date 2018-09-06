@@ -16,7 +16,7 @@ import org.apache.camel.spi.UriEndpoint
     syntax = StartProcessEndpoint.SYNTAX,
     producerOnly = true
 )
-class StartProcessEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context) {
+class StartProcessEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, StartProcessEndpoint.SYNTAX) {
 
   companion object : KLogging() {
     const val COMMAND = "start-process"
@@ -27,8 +27,7 @@ class StartProcessEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEn
     override fun process(exchange: Exchange) {
       val cmd = exchange.getIn().getBody(StartProcessCommand::class.java)
 
-      context.topicClient(cmd.topic)
-          .workflowClient()
+      context.workflowClient
           .newCreateInstanceCommand()
           .bpmnProcessId(cmd.bpmnProcessId)
           .latestVersion()
@@ -36,9 +35,7 @@ class StartProcessEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEn
           .send()
           .join()
 
-      logger.info { "started: topic=${cmd.topic}, bpmnProcessId=${cmd.bpmnProcessId}" }
+      logger.info { "started: bpmnProcessId=${cmd.bpmnProcessId}" }
     }
   }
-
-  override fun getSyntax() = SYNTAX
 }

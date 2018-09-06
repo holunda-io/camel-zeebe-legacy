@@ -21,7 +21,7 @@ import org.apache.camel.spi.UriParam
     syntax = CompleteJobEndpoint.SYNTAX,
     producerOnly = true
 )
-class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context) {
+class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, CompleteJobEndpoint.SYNTAX) {
 
   companion object {
     const val COMMAND = "complete-job"
@@ -32,8 +32,7 @@ class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
     override fun process(exchange: Exchange) {
       val command = exchange.getIn().getBody(CompleteJobCommand::class.java)
 
-      val builder = context.topicClient()
-          .jobClient()
+      val builder = context.jobClient
           .newCompleteCommand(context.jobEvent(command.jobEventJson.json))
 
       command.payload.let { builder.payload(it) }
@@ -41,8 +40,6 @@ class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
       builder.send().join()
     }
   }
-
-  override fun getSyntax(): String = SYNTAX
 }
 
 
@@ -52,24 +49,19 @@ class CompleteJobEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
     syntax = SubscribeJobWorkerEndpoint.SYNTAX,
     consumerOnly = true
 )
-class SubscribeJobWorkerEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEndpoint(context) {
+class SubscribeJobWorkerEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEndpoint(context, SubscribeJobWorkerEndpoint.SYNTAX) {
 
   companion object : KLogging() {
     const val COMMAND = "jobworker"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
   }
 
-  @UriParam(name = "topic", label = "The topic to subscribe to")
-  @org.apache.camel.spi.Metadata(required = "true")
-  lateinit var topic: String
-
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
 
     lateinit var jobWorker: JobWorker
 
     override fun doStart() {
-      jobWorker = context.topicClient()
-          .jobClient()
+      jobWorker = context.jobClient
           .newWorker()
           .jobType("doSomething") // FIXME
           .handler { _, job ->
@@ -88,6 +80,4 @@ class SubscribeJobWorkerEndpoint(context: ZeebeComponentContext) : ZeebeConsumer
         jobWorker.close()
     }
   }
-
-  override fun getSyntax(): String = CompleteJobEndpoint.SYNTAX
 }

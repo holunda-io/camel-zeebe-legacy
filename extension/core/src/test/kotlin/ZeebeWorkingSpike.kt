@@ -55,7 +55,7 @@ class ZeebeWorkingSpike {
         from("direct:start").to("zeebe:start-process")
         from("direct:deploy").to("zeebe:deployment")
 
-        from("zeebe:jobworker?topic=default-topic")
+        from("zeebe:jobworker")
             .bean(JobWorkerBean::class.java)
             .to("zeebe:complete-job")
       }

@@ -5,7 +5,9 @@ import io.zeebe.camel.endpoint.DeployModelEndpoint
 import io.zeebe.camel.endpoint.StartProcessEndpoint
 import io.zeebe.camel.endpoint.SubscribeJobWorkerEndpoint
 import io.zeebe.client.ZeebeClient
+import io.zeebe.client.api.clients.JobClient
 import io.zeebe.client.api.clients.TopicClient
+import io.zeebe.client.api.clients.WorkflowClient
 import io.zeebe.client.api.events.JobEvent
 import io.zeebe.client.impl.ZeebeClientImpl
 import io.zeebe.client.impl.data.ZeebeObjectMapperImpl
@@ -47,20 +49,23 @@ data class ZeebeComponentContext(
     val parameters: Map<String, Any>,
     val clientSupplier: Supplier<ZeebeClient>
 ) {
-  fun topicClient(topicName : String? = null): TopicClient = with(clientSupplier.get()) {
-    if (topicName == null)
-      return topicClient()
-    else return topicClient(topicName)
+
+  val workflowClient: WorkflowClient by lazy {
+    clientSupplier.get().topicClient().workflowClient()
   }
 
-  fun objectMapper(): ZeebeObjectMapperImpl {
+  val jobClient : JobClient by lazy {
+    clientSupplier.get().topicClient().jobClient()
+  }
+
+  val objectMapper : ZeebeObjectMapperImpl by lazy {
     val client = clientSupplier.get()
-    return if (client is ZeebeClientImpl)
+    if (client is ZeebeClientImpl)
       client.objectMapper
     else
       ZeebeObjectMapperImpl()
   }
 
-  fun jobEvent(event: JobEvent) = objectMapper().toJson(event)!!
-  fun jobEvent(json: String) = objectMapper().fromJson(json, JobEvent::class.java)!!
+  fun jobEvent(event: JobEvent) = objectMapper.toJson(event)!!
+  fun jobEvent(json: String) = objectMapper.fromJson(json, JobEvent::class.java)!!
 }

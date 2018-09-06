@@ -15,7 +15,7 @@ import org.apache.camel.spi.UriEndpoint
     syntax = DeployModelEndpoint.SYNTAX,
     producerOnly = true
 )
-class DeployModelEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context) {
+class DeployModelEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, DeployModelEndpoint.SYNTAX) {
 
   companion object : KLogging() {
     const val COMMAND = "deployment"
@@ -26,16 +26,13 @@ class DeployModelEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
     override fun process(exchange: Exchange) {
       val cmd = exchange.getIn().getBody(DeployCommand::class.java)
 
-      context.topicClient(cmd.topic)
-          .workflowClient()
+      context.workflowClient
           .newDeployCommand()
           .addResourceStringUtf8(cmd.xml, cmd.name)
           .send()
           .join()
 
-      logger.info { "deployed: topic=${cmd.topic}, resource=${cmd.name}" }
+      logger.info { "deployed: resource=$cmd" }
     }
   }
-
-  override fun getSyntax() = SYNTAX
 }

@@ -6,15 +6,13 @@ import java.io.File
 
 data class DeployCommand(
     val name: String,
-    val xml: String,
-    val topic: String?
+    val xml: String
 ) {
   companion object {
-    fun of(resourcePath: String, topic: String? = null) = with(DeployCommand::class.java.getResource(resourcePath)) {
+    fun of(resourcePath: String) = with(DeployCommand::class.java.getResource(resourcePath)) {
       DeployCommand(
           File(file).name,
-          readText().trim(),
-          topic
+          readText().trim()
       )
     }
   }
@@ -23,7 +21,6 @@ data class DeployCommand(
 
 data class StartProcessCommand<T>(
     val bpmnProcessId: String,
-    val topic: String? = null,
     val payload: T
 )
 

@@ -8,10 +8,10 @@ class DeployCommandTest {
 
     @Test
     fun `create from classpath resource`() {
-        val cmd = DeployCommand.of("/foo/bar.xml", "topic")
+        val cmd = DeployCommand.of("/foo/bar.xml")
 
         assertThat(cmd.xml).isEqualTo("<hello>World</hello>")
         assertThat(cmd.name).isEqualTo("bar.xml")
-        assertThat(cmd.topic).isEqualTo("topic")
+
     }
 }
