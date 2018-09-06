@@ -30,7 +30,6 @@ dependencies {
   testCompile("org.springframework.boot:spring-boot-starter-test:2.0.4.RELEASE")
   testCompile("org.mockito:mockito-core")
 
-
 //
 //  {
 //    exclude(module = "junit")
