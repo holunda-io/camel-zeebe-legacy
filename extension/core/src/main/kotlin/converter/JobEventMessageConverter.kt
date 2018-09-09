@@ -4,6 +4,7 @@ import org.apache.camel.Converter
 import org.apache.camel.Message
 
 @Converter
+@Deprecated("unused")
 class JobEventMessageConverter {
 
   data class FooMessage(val foo: Long, val hello:String)

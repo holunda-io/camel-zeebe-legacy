@@ -39,25 +39,3 @@ public class WorkerApplication {
         };
     }
 }
-
-
-//        from("file:" + sourceDir + "?include=.*\\.bpmn&noop=true")
-//            .unmarshal(new DataFormat() {
-//                @Override
-//                public void marshal(Exchange exchange, Object graph, OutputStream stream) {
-//// foo
-//                }
-//
-//                @Override
-//                public Object unmarshal(Exchange exchange, InputStream stream) throws IOException {
-//                    return IOUtils.toString(stream, Charset.defaultCharset());
-//                }
-//            })
-//            .process(exchange -> {
-//                //
-//                System.out.println(exchange);
-//            })
-//        .to("log:track")
-//        ;
-//            }
-//        };
