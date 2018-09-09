@@ -2,7 +2,6 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 
 plugins {
   kotlin("jvm")
-
   id("io.spring.dependency-management") version Versions.springBootDependencyManagement
 }
 
@@ -22,7 +21,7 @@ dependencies {
   compile("io.zeebe:zeebe-client-java")
 
   //compile("com.fasterxml.jackson.module:jackson-module-kotlin")
-  compile ("io.github.microutils:kotlin-logging:1.5.9")
+  compile("org.slf4j:slf4j-api:1.7.25")
 
   testCompile("io.zeebe:zeebe-test")
   testCompile("io.zeebe:zeebe-broker-core")

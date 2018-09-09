@@ -1,12 +1,13 @@
 @file:Suppress("PackageDirectoryMismatch")
 package io.zeebe.camel.api.command
 
-import io.zeebe.camel.api.event.JobEvent
+import io.zeebe.camel.api.Json
+import io.zeebe.camel.api.Xml
 import java.io.File
 
 data class DeployCommand(
     val name: String,
-    val xml: String
+    val xml: Xml
 ) {
   companion object {
     fun of(resourcePath: String) = with(DeployCommand::class.java.getResource(resourcePath)) {
@@ -24,4 +25,4 @@ data class StartProcessCommand<T>(
     val payload: T
 )
 
-data class CompleteJobCommand<T>(val jobEventJson: JobEvent, val payload: T? = null)
+data class CompleteJobCommand(val jobEventJson: Json, val payload: Json? = null)

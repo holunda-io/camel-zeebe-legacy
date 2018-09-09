@@ -1,10 +1,10 @@
 package io.zeebe.camel.endpoint
 
-import io.zeebe.camel.UriMetadata
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
+import io.zeebe.camel.processor.InitJobEventProcessor
+import io.zeebe.client.api.record.ZeebeObjectMapper
 import io.zeebe.client.api.subscription.JobWorker
-import mu.KLogging
 import org.apache.camel.Consumer
 import org.apache.camel.Processor
 import org.apache.camel.impl.DefaultConsumer
@@ -19,9 +19,13 @@ import org.apache.camel.spi.UriParam
 )
 class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEndpoint(context, JobSubscribeEndpoint.SYNTAX) {
 
-  companion object : KLogging() {
+  companion object  {
     const val COMMAND = "job/subscribe"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+  }
+
+  private val objectMapper : ZeebeObjectMapper by lazy {
+    context.objectMapper
   }
 
   @UriParam(name = "jobType", label = "the type of job to subscribe to")
@@ -32,19 +36,27 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
   @org.apache.camel.spi.Metadata(required = "false")
   var workerName: String? = null
 
+  @UriParam(name = "toJson", label = "if the jobEvent should be separated to header/body")
+  @org.apache.camel.spi.Metadata(required = "false")
+  var toJson: Boolean = false
+
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
 
     lateinit var jobWorker: JobWorker
-
 
     override fun doStart() {
       val builder = context.jobClient
           .newWorker()
           .jobType(jobType)
           .handler { _, job ->
-            val event = io.zeebe.camel.api.event.JobEvent(context.jobEvent(job))
+
             with(endpoint.createExchange()) {
-              getIn().body = event
+              getIn().body = job
+
+              if (toJson) {
+                InitJobEventProcessor(objectMapper).process(this)
+              }
+
               processor.process(this)
             }
           }

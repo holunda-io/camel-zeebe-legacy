@@ -11,6 +11,11 @@ subprojects {
     plugin("kotlin")
   }
 
+  configurations {
+    group = "io.zeebe.camel"
+    version = "0.0.1-SNAPSHOT"
+  }
+
   dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect"))

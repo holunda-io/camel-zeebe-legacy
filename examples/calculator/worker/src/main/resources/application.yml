@@ -1,0 +1,7 @@
+zeebe:
+  sourceDir: /Users/jangalinski/IdeaProjects/zeebe-io/camel-zeebe/examples/calculator/worker/.tmp
+  destDir: /Users/jangalinski/IdeaProjects/zeebe-io/camel-zeebe/examples/calculator/server/.tmp
+
+camel:
+  springboot:
+    mainRunController: true

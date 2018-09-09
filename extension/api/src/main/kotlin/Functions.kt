@@ -5,6 +5,6 @@ import io.zeebe.camel.api.command.CompleteJobCommand
 import io.zeebe.camel.api.event.JobEvent
 
 
-interface JobWorker<T> {
-  fun apply(event: JobEvent) : CompleteJobCommand<T>
+interface JobWorker {
+  fun apply(event: JobEvent) : CompleteJobCommand
 }

@@ -3,11 +3,11 @@ package io.zeebe.camel.endpoint
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.api.command.StartProcessCommand
-import mu.KLogging
 import org.apache.camel.Exchange
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultProducer
 import org.apache.camel.spi.UriEndpoint
+import org.slf4j.LoggerFactory
 
 
 @UriEndpoint(
@@ -18,9 +18,10 @@ import org.apache.camel.spi.UriEndpoint
 )
 class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, ProcessStartEndpoint.SYNTAX) {
 
-  companion object : KLogging() {
+  companion object {
     const val COMMAND = "process/start"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+    val logger = LoggerFactory.getLogger(ProcessStartEndpoint::class.java)
   }
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
@@ -35,7 +36,7 @@ class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEn
           .send()
           .join()
 
-      logger.info { "started: bpmnProcessId=${cmd.bpmnProcessId}" }
+      logger.info("started: bpmnProcessId={}", cmd.bpmnProcessId )
     }
   }
 }
