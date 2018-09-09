@@ -28,12 +28,14 @@ class ProcessDeployEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyE
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
 
-
-      val cmd = if (exchange.`in` is ProcessDeployMessage) exchange.getIn(ProcessDeployMessage::class.java).toCommand()
-      else {
-        if (exchange.`in`.body is DeployCommand) exchange.`in`.getBody(DeployCommand::class.java)
-        else throw IllegalArgumentException("neither message nor body match.")
-      }
+      val msg = exchange.`in`
+      val cmd =
+          if (msg is ProcessDeployMessage)
+            exchange.getIn(ProcessDeployMessage::class.java).toCommand()
+          else {
+            if (msg.body is DeployCommand) msg.getBody(DeployCommand::class.java)
+            else throw IllegalArgumentException("neither message nor body match.")
+          }
 
       context.workflowClient
           .newDeployCommand()
@@ -41,10 +43,7 @@ class ProcessDeployEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyE
           .send()
           .join()
 
-
       logger.info("deployed: resource={}", cmd)
     }
-
-
   }
 }

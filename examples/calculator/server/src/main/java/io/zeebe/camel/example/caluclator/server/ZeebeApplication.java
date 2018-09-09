@@ -3,6 +3,7 @@ package io.zeebe.camel.example.caluclator.server;
 import io.zeebe.camel.ZeebeComponent;
 import io.zeebe.camel.message.ProcessDeployMessage;
 import io.zeebe.camel.processor.DeployFromFileProcessor;
+import io.zeebe.camel.processor.FromFileToProcessDeployMessage;
 import io.zeebe.spring.broker.EnableZeebeBroker;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
@@ -28,7 +29,7 @@ public class ZeebeApplication {
     private String dir;
 
     @Bean
-    public ZeebeComponent zeebeComponent(ZeebeClientLifecycle lifecycle) {
+    public ZeebeComponent zeebeComponent(final ZeebeClientLifecycle lifecycle) {
         return new ZeebeComponent(lifecycle::get);
     }
 
@@ -38,13 +39,8 @@ public class ZeebeApplication {
             @Override
             public void configure() {
                 from(
-                    "file:" + dir
-                        + "?include=.*\\.bpmn"
-                        + "&noop=true")
-                    .bean((Processor) exchange -> {
-                        GenericFileMessage in = exchange.getIn(GenericFileMessage.class);
-                        exchange.setOut(new ProcessDeployMessage(in));
-                    })
+                    "file:" + dir + "?include=.*\\.bpmn")
+                    .bean(FromFileToProcessDeployMessage.INSTANCE)
                     .to("zeebe:process/deploy")
                 ;
             }

@@ -21,7 +21,7 @@ class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEn
   companion object {
     const val COMMAND = "process/start"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
-    val logger = LoggerFactory.getLogger(ProcessStartEndpoint::class.java)
+    val logger = LoggerFactory.getLogger(ProcessStartEndpoint::class.java)!!
   }
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
