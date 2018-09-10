@@ -26,3 +26,5 @@ data class StartProcessCommand<T>(
 )
 
 data class CompleteJobCommand(val jobEventJson: Json, val payload: Json? = null)
+
+data class AddSubscriptionCommand(val jobType: String, val workerName: String, val to: String)

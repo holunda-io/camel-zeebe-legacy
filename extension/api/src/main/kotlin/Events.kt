@@ -1,4 +1,10 @@
 @file:Suppress("PackageDirectoryMismatch")
 package io.zeebe.camel.api.event
 
-data class JobEvent(val json: String)
+import io.zeebe.camel.api.Json
+
+data class JobCreatedEvent(
+    val jobType: String,
+    val jobEvent: Json,
+    val payload: Json?
+)

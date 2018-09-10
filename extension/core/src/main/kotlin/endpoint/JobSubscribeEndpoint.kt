@@ -2,6 +2,7 @@ package io.zeebe.camel.endpoint
 
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
+import io.zeebe.camel.api.command.AddSubscriptionCommand
 import io.zeebe.camel.jobEvent
 import io.zeebe.camel.message.JobCompleteMessage
 import io.zeebe.camel.processor.InitJobEventProcessor
@@ -24,6 +25,8 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
   companion object  {
     const val COMMAND = "job/subscribe"
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+
+    fun from(cmd: AddSubscriptionCommand) = "${ZeebeComponent.SCHEME}:$COMMAND?jobType=${cmd.jobType}&workerName=${cmd.workerName}"
   }
 
   private val objectMapper : ZeebeObjectMapper by lazy {
@@ -39,6 +42,7 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
   var workerName: String? = null
 
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
+
 
     lateinit var jobWorker: JobWorker
 
