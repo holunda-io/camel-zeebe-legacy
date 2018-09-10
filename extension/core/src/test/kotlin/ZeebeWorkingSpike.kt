@@ -60,13 +60,15 @@ class ZeebeWorkingSpike {
     // register routes
     camel.addRoutes(object : RouteBuilder() {
       override fun configure() {
-        from("direct:start")
+        from("direct:start").routeId("start the process")
             .to("zeebe:process/start")
-        from("direct:deploy").to("zeebe:process/deploy")
+        from("direct:deploy").routeId("deploy the process")
+            .to("zeebe:process/deploy")
 
-        from("zeebe:job/subscribe?jobType=doSomething&toJson=true")
+        from("zeebe:job/subscribe?jobType=doSomething&workerName=dummyCompletor")
+            .routeId("subscribe")
             .bean(CompleteJob::class.java)
-            .to("zeebe:job/complete?fromJson=true")
+            .to("zeebe:job/complete")
       }
     })
 
@@ -75,7 +77,6 @@ class ZeebeWorkingSpike {
   }
 
   @Test
-  @Ignore
   fun `start process and work on task`() {
     initCamel()
     subscribeLogger()

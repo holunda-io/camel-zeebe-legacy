@@ -2,6 +2,8 @@ package io.zeebe.camel.endpoint
 
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
+import io.zeebe.camel.jobEvent
+import io.zeebe.camel.message.JobCompleteMessage
 import io.zeebe.camel.processor.InitJobEventProcessor
 import io.zeebe.client.api.record.ZeebeObjectMapper
 import io.zeebe.client.api.subscription.JobWorker
@@ -36,10 +38,6 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
   @org.apache.camel.spi.Metadata(required = "false")
   var workerName: String? = null
 
-  @UriParam(name = "toJson", label = "if the jobEvent should be separated to header/body")
-  @org.apache.camel.spi.Metadata(required = "false")
-  var toJson: Boolean = false
-
   override fun createConsumer(processor: Processor): Consumer = object : DefaultConsumer(this, processor) {
 
     lateinit var jobWorker: JobWorker
@@ -49,16 +47,15 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
           .newWorker()
           .jobType(jobType)
           .handler { _, job ->
+            val exchange = endpoint.createExchange()
 
-            with(endpoint.createExchange()) {
-              getIn().body = job
+            exchange.`in` = JobCompleteMessage(exchange.context)
+                .withJobType(jobType)
+                .withPayload(job.payload)
+                .withJobWorker(workerName)
+                .withJobEvent(objectMapper.jobEvent(job))
 
-              if (toJson) {
-                InitJobEventProcessor(objectMapper).process(this)
-              }
-
-              processor.process(this)
-            }
+              processor.process(exchange)
           }
 
       if (workerName != null) {

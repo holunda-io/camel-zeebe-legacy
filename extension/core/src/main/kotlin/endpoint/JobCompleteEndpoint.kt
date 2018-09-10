@@ -3,7 +3,10 @@ package endpoint
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.api.command.CompleteJobCommand
+import io.zeebe.camel.api.command.DeployCommand
 import io.zeebe.camel.endpoint.ZeebeProducerOnlyEndpoint
+import io.zeebe.camel.message.JobCompleteMessage
+import io.zeebe.camel.message.ProcessDeployMessage
 import io.zeebe.camel.processor.InitJobEventProcessor
 import io.zeebe.camel.processor.PrepareCompleteJobCommandProcessor
 import org.apache.camel.Exchange
@@ -25,27 +28,18 @@ class JobCompleteEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
     const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
   }
 
-  @UriParam(name = "fromJson", label = "if the complete job command should be build from header/json")
-  @org.apache.camel.spi.Metadata(required = "false")
-  var fromJson: Boolean = false
-
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
-      if (fromJson) {
-        PrepareCompleteJobCommandProcessor(context.objectMapper).process(exchange)
-      }
+      val msg = JobCompleteMessage(exchange.`in` )
 
-      val message = exchange.`in`
 
-      val command = message.getBody(CompleteJobCommand::class.java)
-
-      val jobEvent = context.jobEvent(command.jobEventJson)
+      val jobEvent = context.jobEvent(msg.getJobEventJson())
 
       val builder = context.jobClient
           .newCompleteCommand(jobEvent)
 
-      val payload = message.getBody(String::class.java)
+      val payload = msg.body
 
       if (payload != null ) {
         builder.payload(payload)
