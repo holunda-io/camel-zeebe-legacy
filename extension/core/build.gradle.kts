@@ -3,6 +3,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 plugins {
   kotlin("jvm")
   id("io.spring.dependency-management") version Versions.springBootDependencyManagement
+  `maven-publish`
 }
 
 
@@ -52,3 +53,24 @@ repositories {
 //val test by tasks.getting(Test::class) {
 //  useJUnitPlatform()
 //}
+
+
+
+val sourcesJar by tasks.registering(Jar::class) {
+  classifier = "sources"
+  from(sourceSets["main"].allSource)
+}
+publishing {
+  repositories {
+    maven {
+      // change to point to your repo, e.g. http://my.org/repo
+      url = uri("$buildDir/repo")
+    }
+  }
+  publications {
+    register("mavenJava", MavenPublication::class.java) {
+      from(components["java"])
+      artifact(sourcesJar.get())
+    }
+  }
+}
