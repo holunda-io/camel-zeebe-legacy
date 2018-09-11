@@ -1,7 +1,7 @@
 package io.zeebe.camel.routes
 
 import io.zeebe.camel.ZeebeComponent
-import io.zeebe.camel.processor.DeployFromFileProcessor
+import io.zeebe.camel.processor.FromFileToProcessDeployCommand
 import io.zeebe.test.ZeebeTestRule
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.impl.DefaultCamelContext
@@ -9,7 +9,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
 
 class DeployFromFileTest {
 
@@ -28,7 +27,7 @@ class DeployFromFileTest {
     camel.addRoutes(object: RouteBuilder() {
       override fun configure() {
         from("file:${tmp.root.absolutePath}&noop=true") //?include=.*\\.bpmn&noop=true")
-            .bean(DeployFromFileProcessor::class.java)
+            .bean(FromFileToProcessDeployCommand)
             .to("log:out")
       }
     })

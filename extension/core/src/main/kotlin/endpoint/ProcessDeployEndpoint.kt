@@ -3,7 +3,6 @@ package io.zeebe.camel.endpoint
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.api.command.DeployCommand
-import io.zeebe.camel.message.ProcessDeployMessage
 import org.apache.camel.Exchange
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultProducer
@@ -27,15 +26,7 @@ class ProcessDeployEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyE
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
-
-      val msg = exchange.`in`
-      val cmd =
-          if (msg is ProcessDeployMessage)
-            exchange.getIn(ProcessDeployMessage::class.java).toCommand()
-          else {
-            if (msg.body is DeployCommand) msg.getBody(DeployCommand::class.java)
-            else throw IllegalArgumentException("neither message nor body match.")
-          }
+      val cmd = exchange.`in`.getMandatoryBody(DeployCommand::class.java)
 
       context.workflowClient
           .newDeployCommand()

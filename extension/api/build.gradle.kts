@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  compile("org.apache.camel:camel-core:2.22.0")
   testCompile("junit:junit:4.12")
   testCompile("org.assertj:assertj-core:3.10.0")
   testCompile("org.slf4j:slf4j-simple:1.7.25")

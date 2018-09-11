@@ -26,7 +26,7 @@ class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEn
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
-      val cmd = exchange.getIn().getBody(StartProcessCommand::class.java)
+      val cmd = exchange.getIn().getMandatoryBody(StartProcessCommand::class.java)
 
       context.workflowClient
           .newCreateInstanceCommand()

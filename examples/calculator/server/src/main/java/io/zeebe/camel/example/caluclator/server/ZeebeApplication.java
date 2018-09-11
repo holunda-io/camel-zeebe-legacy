@@ -1,7 +1,7 @@
 package io.zeebe.camel.example.caluclator.server;
 
 import io.zeebe.camel.ZeebeComponent;
-import io.zeebe.camel.processor.FromFileToProcessDeployMessage;
+import io.zeebe.camel.processor.FromFileToProcessDeployCommand;
 import io.zeebe.spring.broker.EnableZeebeBroker;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
@@ -35,7 +35,7 @@ public class ZeebeApplication {
             public void configure() {
                 from(
                     "file:" + dir + "?include=.*\\.bpmn")
-                    .bean(FromFileToProcessDeployMessage.INSTANCE)
+                    .bean(FromFileToProcessDeployCommand.INSTANCE)
                     .to("zeebe:process/deploy")
                 ;
             }

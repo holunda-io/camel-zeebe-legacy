@@ -3,17 +3,12 @@ package endpoint
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
 import io.zeebe.camel.api.command.CompleteJobCommand
-import io.zeebe.camel.api.command.DeployCommand
 import io.zeebe.camel.endpoint.ZeebeProducerOnlyEndpoint
-import io.zeebe.camel.message.JobCompleteMessage
-import io.zeebe.camel.message.ProcessDeployMessage
-import io.zeebe.camel.processor.InitJobEventProcessor
-import io.zeebe.camel.processor.PrepareCompleteJobCommandProcessor
+import io.zeebe.camel.jobEvent
 import org.apache.camel.Exchange
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultProducer
 import org.apache.camel.spi.UriEndpoint
-import org.apache.camel.spi.UriParam
 
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME,
@@ -31,15 +26,14 @@ class JobCompleteEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEnd
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
-      val msg = JobCompleteMessage(exchange.`in` )
+      val cmd = exchange.`in`.getMandatoryBody(CompleteJobCommand::class.java)
 
-
-      val jobEvent = context.jobEvent(msg.getJobEventJson())
+      val jobEvent = zeebeObjectMapper.jobEvent(cmd.jobEventJson)
 
       val builder = context.jobClient
           .newCompleteCommand(jobEvent)
 
-      val payload = msg.body
+      val payload = cmd.payload
 
       if (payload != null ) {
         builder.payload(payload)

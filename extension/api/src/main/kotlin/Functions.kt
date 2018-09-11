@@ -1,10 +1,12 @@
-@file:Suppress("PackageDirectoryMismatch")
+@file:Suppress(PACKAGE)
 package io.zeebe.camel.api
 
 import io.zeebe.camel.api.command.CompleteJobCommand
-import io.zeebe.camel.api.event.JobEvent
+import io.zeebe.camel.api.event.JobCreatedEvent
 
 
 interface JobWorker {
-  fun apply(event: JobEvent) : CompleteJobCommand
+  fun apply(event: JobCreatedEvent) : CompleteJobCommand
 }
+
+class JobWorkerProcessor()

@@ -1,15 +1,20 @@
 package io.zeebe.camel
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.zeebe.camel.api.AddSubscriptionGateway
 import io.zeebe.camel.api.DeployGateway
 import io.zeebe.camel.api.JobWorker
 import io.zeebe.camel.api.StartProcessGateway
+import io.zeebe.camel.api.command.AddSubscriptionCommand
 import io.zeebe.camel.api.command.CompleteJobCommand
 import io.zeebe.camel.api.command.DeployCommand
 import io.zeebe.camel.api.command.StartProcessCommand
+import io.zeebe.camel.api.event.JobCreatedEvent
 import io.zeebe.client.api.record.Record
 import io.zeebe.test.ZeebeTestRule
 import org.apache.camel.CamelContext
+import org.apache.camel.Exchange
+import org.apache.camel.Processor
 import org.apache.camel.builder.ProxyBuilder
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.impl.DefaultCamelContext
@@ -34,14 +39,13 @@ class ZeebeWorkingSpike {
 
   lateinit var deployGateway: DeployGateway
   lateinit var startGateway : StartProcessGateway
+  lateinit var subscribeGateway: AddSubscriptionGateway
 
+  val objectMapper = ObjectMapper()
   data class ReturnPayload(val bar:Int)
   data class StartPayload(val foo: String)
 
 
-  class CompleteJob {
-    fun apply(payloadJson: String) : ReturnPayload = ReturnPayload((ObjectMapper().convertValue(payloadJson, StartPayload::class.java)).foo.length)
-  }
 
   private fun initCamel() {
 
@@ -52,6 +56,7 @@ class ZeebeWorkingSpike {
     deployGateway = ProxyBuilder(camel).endpoint("direct:deploy").build(DeployGateway::class.java)
     // allow sending start commands to route
     startGateway = ProxyBuilder(camel).endpoint("direct:start").build(StartProcessGateway::class.java)
+    subscribeGateway = ProxyBuilder(camel).endpoint("direct:subscribe").build(AddSubscriptionGateway::class.java)
 
     // register zeebe main component
     camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
@@ -64,11 +69,25 @@ class ZeebeWorkingSpike {
             .to("zeebe:process/start")
         from("direct:deploy").routeId("deploy the process")
             .to("zeebe:process/deploy")
+        from("direct:subscribe").routeId("add subscription")
+            .to("zeebe:job/addSubscription")
 
-        from("zeebe:job/subscribe?jobType=doSomething&workerName=dummyCompletor")
-            .routeId("subscribe")
-            .bean(CompleteJob::class.java)
-            .to("zeebe:job/complete")
+//        from("zeebe:job/subscribe?jobType=doSomething&workerName=dummyCompletor")
+//            .routeId("subscribe")
+//            .bean(Processor {
+//              val evt = it.`in`.getMandatoryBody(JobCreatedEvent::class.java)
+//              val payloadIn = objectMapper.convertValue(evt.payload, StartPayload::class.java)
+//
+//              val payloadOut = ReturnPayload(payloadIn.foo.length)
+//
+//              it.`in`.body = CompleteJobCommand(
+//                  jobType = evt.jobType,
+//                  workerName = evt.workerName,
+//                  payload = objectMapper.writeValueAsString(payloadOut),
+//                  jobEventJson=  evt.jobEvent
+//              )
+//            })
+//            .to("zeebe:job/complete")
       }
     })
 
@@ -84,8 +103,12 @@ class ZeebeWorkingSpike {
     // use proxy to send deploy command to direct:deploy
     deployGateway.send(DeployCommand.of("/dummy.bpmn"))
 
+    subscribeGateway.send(AddSubscriptionCommand("doSomething", "dynamic", to= "file:/Users/jangalinski/msg"))
+
     // use proxy to send start command to direct:start
     startGateway.send(StartProcessCommand("process_dummy", payload =  StartPayload(UUID.randomUUID().toString())))
+
+
 
     // the completion is done via route zeebe:jobworker->direct:foo->zeebe:complete
 

@@ -20,6 +20,8 @@ dependencies {
 
   compile("org.apache.camel:camel-core")
   compile("io.zeebe:zeebe-client-java")
+  compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1")
+
 
   //compile("com.fasterxml.jackson.module:jackson-module-kotlin")
   compile("org.slf4j:slf4j-api:1.7.25")

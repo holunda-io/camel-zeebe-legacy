@@ -1,6 +1,7 @@
 package io.zeebe.camel
 
 import endpoint.JobCompleteEndpoint
+import io.zeebe.camel.endpoint.JobAddSubscriptionEndpoint
 import io.zeebe.camel.endpoint.ProcessDeployEndpoint
 import io.zeebe.camel.endpoint.ProcessStartEndpoint
 import io.zeebe.camel.endpoint.JobSubscribeEndpoint
@@ -31,6 +32,8 @@ open class ZeebeComponent(private val clientSupplier: Supplier<ZeebeClient>) : D
     ProcessDeployEndpoint.COMMAND -> ProcessDeployEndpoint(context)
     JobSubscribeEndpoint.COMMAND -> JobSubscribeEndpoint(context)
     ProcessStartEndpoint.COMMAND -> ProcessStartEndpoint(context)
+    JobAddSubscriptionEndpoint.COMMAND -> JobAddSubscriptionEndpoint(context)
+
     else -> throw IllegalArgumentException("unkown: ${context.remaining}")
   }
 
