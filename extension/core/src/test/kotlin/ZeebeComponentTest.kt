@@ -24,12 +24,12 @@ class ZeebeComponentTest {
 
   @Test
   fun `create job-subscribe endpoint`() {
-    var endpoint = camel.getEndpoint("zeebe:job/subscribe?jobType=the-job")
+    var endpoint = camel.getEndpoint("zeebe:job/subscribe?jobType=the-job&workerName=dummy")
 
     assertThat(endpoint).isInstanceOf(JobSubscribeEndpoint::class.java)
     endpoint = endpoint as JobSubscribeEndpoint
 
-    assertThat(endpoint.workerName).isNull()
+    assertThat(endpoint.workerName).isEqualTo("dummy")
     assertThat(endpoint.jobType).isEqualTo("the-job")
 
     endpoint = camel.getEndpoint("zeebe:job/subscribe?jobType=the-job&workerName=name", JobSubscribeEndpoint::class.java)
