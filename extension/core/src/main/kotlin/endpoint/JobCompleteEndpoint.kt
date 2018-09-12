@@ -1,4 +1,4 @@
-package endpoint
+package io.zeebe.camel.endpoint
 
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
