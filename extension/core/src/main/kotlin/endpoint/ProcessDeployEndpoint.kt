@@ -2,7 +2,7 @@ package io.zeebe.camel.endpoint
 
 import io.zeebe.camel.ZeebeComponent
 import io.zeebe.camel.ZeebeComponentContext
-import io.zeebe.camel.api.command.DeployCommand
+import io.zeebe.camel.api.command.DeployProcessCommand
 import org.apache.camel.Exchange
 import org.apache.camel.Producer
 import org.apache.camel.impl.DefaultProducer
@@ -12,21 +12,21 @@ import org.slf4j.LoggerFactory
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME,
     title = "Zeebe Deployment",
-    syntax = ProcessDeployEndpoint.SYNTAX,
+    syntax = ProcessDeployEndpoint.ENDPOINT,
     producerOnly = true
 )
-class ProcessDeployEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, ProcessDeployEndpoint.SYNTAX) {
+class ProcessDeployEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, ProcessDeployEndpoint.ENDPOINT) {
 
   companion object {
-    const val COMMAND = "process/deploy"
-    const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+    const val REMAINING = "process/deploy"
+    const val ENDPOINT = "${ZeebeComponent.SCHEME}:$REMAINING"
 
     val logger = LoggerFactory.getLogger(ProcessDeployEndpoint::class.java)!!
   }
 
   override fun createProducer(): Producer = object : DefaultProducer(this) {
     override fun process(exchange: Exchange) {
-      val cmd = exchange.`in`.getMandatoryBody(DeployCommand::class.java)
+      val cmd = exchange.`in`.getMandatoryBody(DeployProcessCommand::class.java)
 
       context.workflowClient
           .newDeployCommand()

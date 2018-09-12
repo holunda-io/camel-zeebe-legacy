@@ -1,25 +1,20 @@
 package io.zeebe.camel
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.zeebe.camel.api.AddSubscriptionGateway
-import io.zeebe.camel.api.DeployGateway
-import io.zeebe.camel.api.JobWorker
-import io.zeebe.camel.api.StartProcessGateway
-import io.zeebe.camel.api.command.AddSubscriptionCommand
-import io.zeebe.camel.api.command.CompleteJobCommand
-import io.zeebe.camel.api.command.DeployCommand
+import io.zeebe.camel.api.*
+import io.zeebe.camel.api.command.RegisterJobWorkerCommand
+import io.zeebe.camel.api.command.DeployProcessCommand
 import io.zeebe.camel.api.command.StartProcessCommand
-import io.zeebe.camel.api.event.JobCreatedEvent
+import io.zeebe.camel.endpoint.WorkerRegisterEndpoint
+import io.zeebe.camel.endpoint.ProcessDeployEndpoint
+import io.zeebe.camel.endpoint.ProcessStartEndpoint
 import io.zeebe.client.api.record.Record
 import io.zeebe.test.ZeebeTestRule
 import org.apache.camel.CamelContext
-import org.apache.camel.Exchange
-import org.apache.camel.Processor
-import org.apache.camel.builder.ProxyBuilder
+import org.apache.camel.LoggingLevel
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.impl.DefaultCamelContext
 import org.awaitility.Awaitility.await
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -28,49 +23,57 @@ import java.util.function.Supplier
 
 class ZeebeWorkingSpike {
 
-  companion object {
-    val logger = LoggerFactory.getLogger(ZeebeWorkingSpike::class.java)
-  }
+    companion object {
+        val logger = LoggerFactory.getLogger(ZeebeWorkingSpike::class.java)
+    }
 
-  @get:Rule
-  val zeebe = ZeebeTestRule()
+    @get:Rule
+    val zeebe = ZeebeTestRule()
 
-  private val records = mutableListOf<Record>()
+    private val records = mutableListOf<Record>()
 
-  lateinit var deployGateway: DeployGateway
-  lateinit var startGateway : StartProcessGateway
-  lateinit var subscribeGateway: AddSubscriptionGateway
+    lateinit var deployProcessGateway: DeployProcessGateway
+    lateinit var startProcessGateway: StartProcessGateway
+    lateinit var registerJobWorkerGateway: RegisterJobWorkerGateway
 
-  val objectMapper = ObjectMapper()
-  data class ReturnPayload(val bar:Int)
-  data class StartPayload(val foo: String)
+    val objectMapper = ObjectMapper()
 
-
-
-  private fun initCamel() {
-
-    // create default context for testing
-    val camel: CamelContext = DefaultCamelContext()
-
-    // allow sending deploy commands to route
-    deployGateway = ProxyBuilder(camel).endpoint("direct:deploy").build(DeployGateway::class.java)
-    // allow sending start commands to route
-    startGateway = ProxyBuilder(camel).endpoint("direct:start").build(StartProcessGateway::class.java)
-    subscribeGateway = ProxyBuilder(camel).endpoint("direct:subscribe").build(AddSubscriptionGateway::class.java)
-
-    // register zeebe main component
-    camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
+    data class ReturnPayload(val bar: Int)
+    data class StartPayload(val foo: String)
 
 
-    // register routes
-    camel.addRoutes(object : RouteBuilder() {
-      override fun configure() {
-        from("direct:start").routeId("start the process")
-            .to("zeebe:process/start")
-        from("direct:deploy").routeId("deploy the process")
-            .to("zeebe:process/deploy")
-        from("direct:subscribe").routeId("add subscription")
-            .to("zeebe:job/addSubscription")
+    private fun initCamel() {
+
+        // create default context for testing
+        val camel: CamelContext = DefaultCamelContext()
+
+        // allow sending deploy commands to route
+        deployProcessGateway = camel.zeebeDeployProcessGateway()
+        // allow sending start commands to route
+        startProcessGateway = camel.zeebeStartProcessGateway()
+        registerJobWorkerGateway = camel.zeebeRegisterJobWorkerGateway()
+
+        // register zeebe main component
+        camel.addComponent(ZeebeComponent.SCHEME, ZeebeComponent(Supplier { zeebe.client }))
+
+
+        // register routes
+        camel.addRoutes(object : RouteBuilder() {
+            override fun configure() {
+                from(StartProcessGateway.ENDPOINT)
+                        .id("start the process")
+                        .log(LoggingLevel.INFO, "starting the process")
+                        .to(ProcessStartEndpoint.ENDPOINT)
+
+                from(DeployProcessGateway.ENDPOINT)
+                        .id("deploy the process")
+                        .log(LoggingLevel.INFO, "deploying the process")
+                        .to(ProcessDeployEndpoint.ENDPOINT)
+
+                from(RegisterJobWorkerGateway.ENDPOINT)
+                        .id("add subscription")
+                        .log(LoggingLevel.INFO, "register job worker")
+                        .to(WorkerRegisterEndpoint.ENDPOINT)
 
 //        from("zeebe:job/subscribe?jobType=doSomething&workerName=dummyCompletor")
 //            .routeId("subscribe")
@@ -88,51 +91,50 @@ class ZeebeWorkingSpike {
 //              )
 //            })
 //            .to("zeebe:job/complete")
-      }
-    })
+            }
+        })
 
-    // start the context
-    camel.start()
-  }
-
-  @Test
-  fun `start process and work on task`() {
-    initCamel()
-    subscribeLogger()
-
-    // use proxy to send deploy command to direct:deploy
-    deployGateway.send(DeployCommand.of("/dummy.bpmn"))
-
-    subscribeGateway.send(AddSubscriptionCommand("doSomething", "dynamic", to= "file:/Users/jangalinski/msg"))
-
-    // use proxy to send start command to direct:start
-    startGateway.send(StartProcessCommand("process_dummy", payload =  StartPayload(UUID.randomUUID().toString())))
-
-
-
-    // the completion is done via route zeebe:jobworker->direct:foo->zeebe:complete
-
-    await().untilAsserted {
-      logger.info("records: {}",records)
-      records.find { it.metadata.intent == "COMPLETED" } != null
+        // start the context
+        camel.start()
     }
-  }
+
+    @Test
+    fun `start process and work on task`() {
+        initCamel()
+        subscribeLogger()
+
+        // use proxy to send deploy command to direct:deploy
+        deployProcessGateway.send(DeployProcessCommand.of("/dummy.bpmn"))
+
+        registerJobWorkerGateway.send(RegisterJobWorkerCommand("doSomething", "dynamic", to = "file:/Users/jangalinski/msg"))
+
+        // use proxy to send start command to direct:start
+        startProcessGateway.send(StartProcessCommand("process_dummy", payload = StartPayload(UUID.randomUUID().toString())))
 
 
-  private fun subscribeLogger() = zeebe.client.topicClient()
-      .newSubscription()
-      .name("record-logger")
-      .recordHandler { record ->
-        records += record
-        logger.info(
-          """
+        // the completion is done via route zeebe:jobworker->direct:foo->zeebe:complete
+
+        await().untilAsserted {
+            logger.info("records: {}", records)
+            records.find { it.metadata.intent == "COMPLETED" } != null
+        }
+    }
+
+
+    private fun subscribeLogger() = zeebe.client.topicClient()
+            .newSubscription()
+            .name("record-logger")
+            .recordHandler { record ->
+                records += record
+                logger.info(
+                        """
               Record-Logger: ${record.metadata.key} ${record.metadata.valueType}
                   ${record.toJson()}
                     """
-        )
-      }
-      .startAtHeadOfTopic()
-      .forcedStart()
-      .open();
+                )
+            }
+            .startAtHeadOfTopic()
+            .forcedStart()
+            .open();
 
 }

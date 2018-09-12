@@ -6,13 +6,13 @@ import io.zeebe.camel.api.PACKAGE
 import io.zeebe.camel.api.Xml
 import java.io.File
 
-data class DeployCommand(
+data class DeployProcessCommand(
     val name: String,
     val xml: Xml
 ) {
   companion object {
-    fun of(resourcePath: String) = with(DeployCommand::class.java.getResource(resourcePath)) {
-      DeployCommand(
+    fun of(resourcePath: String) = with(DeployProcessCommand::class.java.getResource(resourcePath)) {
+      DeployProcessCommand(
           File(file).name,
           readText().trim()
       )
@@ -33,7 +33,7 @@ data class CompleteJobCommand(
     val payload: Json? = null
 )
 
-data class AddSubscriptionCommand(
+data class RegisterJobWorkerCommand(
     val jobType: String,
     val workerName: String,
     val to: String

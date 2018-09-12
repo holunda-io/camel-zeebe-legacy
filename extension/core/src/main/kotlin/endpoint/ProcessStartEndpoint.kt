@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME,
     title = "Zeebe Start Process",
-    syntax = ProcessStartEndpoint.SYNTAX,
+    syntax = ProcessStartEndpoint.ENDPOINT,
     producerOnly = true
 )
-class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, ProcessStartEndpoint.SYNTAX) {
+class ProcessStartEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, ProcessStartEndpoint.ENDPOINT) {
 
   companion object {
-    const val COMMAND = "process/start"
-    const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+    const val REMAINING = "process/start"
+    const val ENDPOINT = "${ZeebeComponent.SCHEME}:$REMAINING"
     val logger = LoggerFactory.getLogger(ProcessStartEndpoint::class.java)!!
   }
 

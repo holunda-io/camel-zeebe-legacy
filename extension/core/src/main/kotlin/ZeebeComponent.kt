@@ -1,7 +1,7 @@
 package io.zeebe.camel
 
 import endpoint.JobCompleteEndpoint
-import io.zeebe.camel.endpoint.JobAddSubscriptionEndpoint
+import io.zeebe.camel.endpoint.WorkerRegisterEndpoint
 import io.zeebe.camel.endpoint.ProcessDeployEndpoint
 import io.zeebe.camel.endpoint.ProcessStartEndpoint
 import io.zeebe.camel.endpoint.JobSubscribeEndpoint
@@ -21,23 +21,24 @@ import java.util.function.Supplier
  */
 open class ZeebeComponent(private val clientSupplier: Supplier<ZeebeClient>) : DefaultComponent() {
 
-  constructor(client: ZeebeClient) : this(Supplier { client })
+    constructor(client: ZeebeClient) : this(Supplier { client })
 
-  companion object {
-    const val SCHEME = "zeebe"
-  }
+    companion object {
+        const val SCHEME = "zeebe"
+    }
 
-  private fun createEndpoint(context: ZeebeComponentContext): Endpoint = when (context.remaining) {
-    JobCompleteEndpoint.COMMAND -> JobCompleteEndpoint(context)
-    ProcessDeployEndpoint.COMMAND -> ProcessDeployEndpoint(context)
-    JobSubscribeEndpoint.COMMAND -> JobSubscribeEndpoint(context)
-    ProcessStartEndpoint.COMMAND -> ProcessStartEndpoint(context)
-    JobAddSubscriptionEndpoint.COMMAND -> JobAddSubscriptionEndpoint(context)
+    @Throws(IllegalArgumentException::class)
+    private fun createEndpoint(context: ZeebeComponentContext): Endpoint = when (context.remaining) {
+        JobCompleteEndpoint.REMAINING -> JobCompleteEndpoint(context)
+        ProcessDeployEndpoint.REMAINING -> ProcessDeployEndpoint(context)
+        JobSubscribeEndpoint.REMAINING -> JobSubscribeEndpoint(context)
+        ProcessStartEndpoint.REMAINING -> ProcessStartEndpoint(context)
+        WorkerRegisterEndpoint.REMAINING -> WorkerRegisterEndpoint(context)
 
-    else -> throw IllegalArgumentException("unkown: ${context.remaining}")
-  }
+        else -> throw IllegalArgumentException("unkown: ${context.remaining}")
+    }
 
-  override fun createEndpoint(uri: String, remaining: String, parameters: MutableMap<String, Any>): Endpoint = createEndpoint(ZeebeComponentContext(uri, remaining, parameters, clientSupplier))
+    override fun createEndpoint(uri: String, remaining: String, parameters: MutableMap<String, Any>): Endpoint = createEndpoint(ZeebeComponentContext(uri, remaining, parameters, clientSupplier))
 }
 
 /**
@@ -45,38 +46,38 @@ open class ZeebeComponent(private val clientSupplier: Supplier<ZeebeClient>) : D
  * ZeebeClient functions.
  */
 data class ZeebeComponentContext(
-    val uri: String,
-    val remaining: String,
-    val parameters: Map<String, Any>,
-    val clientSupplier: Supplier<ZeebeClient>
+        val uri: String,
+        val remaining: String,
+        val parameters: Map<String, Any>,
+        val clientSupplier: Supplier<ZeebeClient>
 ) {
 
-  val type : String
-  val command : String
+    val type: String
+    val command: String
 
-  init {
-    val parts: MatchResult.Destructured = """(\w+)/(\w+)""".toRegex().find(remaining)!!.destructured
+    init {
+        val parts: MatchResult.Destructured = """(\w+)/(\w+)""".toRegex().find(remaining)!!.destructured
 
-    type = parts.component1()
-    command = parts.component2()
-  }
+        type = parts.component1()
+        command = parts.component2()
+    }
 
-  val workflowClient: WorkflowClient by lazy {
-    clientSupplier.get().topicClient().workflowClient()
-  }
+    val workflowClient: WorkflowClient by lazy {
+        clientSupplier.get().topicClient().workflowClient()
+    }
 
-  val jobClient : JobClient by lazy {
-    clientSupplier.get().topicClient().jobClient()
-  }
+    val jobClient: JobClient by lazy {
+        clientSupplier.get().topicClient().jobClient()
+    }
 
-  val objectMapper : ZeebeObjectMapperImpl by lazy {
-    val client = clientSupplier.get()
-    if (client is ZeebeClientImpl)
-      client.objectMapper
-    else
-      ZeebeObjectMapperImpl()
-  }
+    val objectMapper: ZeebeObjectMapperImpl by lazy {
+        val client = clientSupplier.get()
+        if (client is ZeebeClientImpl)
+            client.objectMapper
+        else
+            ZeebeObjectMapperImpl()
+    }
 
-  fun jobEvent(event: JobEvent) = objectMapper.toJson(event)!!
-  fun jobEvent(json: String) = objectMapper.fromJson(json, JobEvent::class.java)!!
+    fun jobEvent(event: JobEvent) = objectMapper.toJson(event)!!
+    fun jobEvent(json: String) = objectMapper.fromJson(json, JobEvent::class.java)!!
 }

@@ -13,14 +13,14 @@ import org.apache.camel.spi.UriEndpoint
 @UriEndpoint(
     scheme = ZeebeComponent.SCHEME,
     title = "Zeebe Complete Job",
-    syntax = JobCompleteEndpoint.SYNTAX,
+    syntax = JobCompleteEndpoint.ENDPOINT,
     producerOnly = true
 )
-class JobCompleteEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, JobCompleteEndpoint.SYNTAX) {
+class JobCompleteEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnlyEndpoint(context, JobCompleteEndpoint.ENDPOINT) {
 
   companion object {
-    const val COMMAND = "job/complete"
-    const val SYNTAX = "${ZeebeComponent.SCHEME}:$COMMAND"
+    const val REMAINING = "job/complete"
+    const val ENDPOINT = "${ZeebeComponent.SCHEME}:$REMAINING"
   }
 
 
