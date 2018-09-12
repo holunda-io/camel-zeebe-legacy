@@ -1,6 +1,6 @@
 package io.zeebe.camel
 
-import endpoint.JobCompleteEndpoint
+import io.zeebe.camel.endpoint.JobCompleteEndpoint
 import io.zeebe.camel.endpoint.JobSubscribeEndpoint
 import io.zeebe.camel.endpoint.ProcessDeployEndpoint
 import io.zeebe.camel.endpoint.ProcessStartEndpoint
