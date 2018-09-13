@@ -13,7 +13,7 @@ subprojects {
 
   configurations {
     group = "io.zeebe.camel"
-    version = "0.0.1-SNAPSHOT"
+    version = "0.0.3-SNAPSHOT"
   }
 
   dependencies {

@@ -26,7 +26,7 @@ class JobSubscribeEndpoint(context: ZeebeComponentContext) : ZeebeConsumerOnlyEn
         const val REMAINING = "job/subscribe"
         const val ENDPOINT = "${ZeebeComponent.SCHEME}:$REMAINING"
 
-        fun from(jobType: String, workerName: String) = ENDPOINT +
+        fun endpoint(jobType: String, workerName: String) = ENDPOINT +
                 "?jobType=$jobType" +
                 "&workerName=$workerName"
     }

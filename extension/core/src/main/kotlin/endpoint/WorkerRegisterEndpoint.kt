@@ -28,7 +28,7 @@ class WorkerRegisterEndpoint(context: ZeebeComponentContext) : ZeebeProducerOnly
 
       exchange.context.addRoutes(object: RouteBuilder() {
         override fun configure() {
-          from(JobSubscribeEndpoint.from(cmd.jobType, cmd.workerName))
+          from(JobSubscribeEndpoint.endpoint(cmd.jobType, cmd.workerName))
               .routeId(cmd.toString())
               .to(cmd.to)
         }

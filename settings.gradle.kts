@@ -10,6 +10,6 @@ include("extension:core")
 findProject(":extension:core")?.name = "camel-zeebe-core"
 
 
-include("examples")
-include("examples:calculator:server")
-include("examples:calculator:worker")
+//include("examples")
+//include("examples:calculator:server")
+//include("examples:calculator:worker")

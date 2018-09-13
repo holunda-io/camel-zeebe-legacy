@@ -37,4 +37,8 @@ data class RegisterJobWorkerCommand(
     val jobType: String,
     val workerName: String,
     val to: String
-)
+) {
+  val id by lazy {
+    "$workerName-$jobType"
+  }
+}
